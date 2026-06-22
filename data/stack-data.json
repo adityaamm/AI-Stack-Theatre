@@ -1,0 +1,418 @@
+{
+  "meta": {
+    "dataMode": "STRUCTURAL_SAMPLE",
+    "note": "This dataset defines the structure every layer/player record uses. Numeric financial fields are intentionally left as 'pending live refresh' rather than populated with placeholder numbers, to avoid presenting any unverified figure as fact. Once deployed and connected to Finnhub, SEC EDGAR, World Bank, IMF, Eurostat, Stanford HAI, and WEF per the architecture, the Netlify Functions in /netlify/functions populate these fields live.",
+    "tierALastRefreshed": null,
+    "tierBLastResearched": null
+  },
+  "layers": [
+    {
+      "id": "semiconductors-design",
+      "order": 1,
+      "name": "Semiconductors & AI Chip Design",
+      "hoverDescription": [
+        "Companies that design the processors (GPUs, AI accelerators, custom silicon) that power AI training and inference.",
+        "Distinct from manufacturing — these firms design chips but typically don't fabricate them."
+      ],
+      "overview": "Designs the compute primitives — GPUs, TPUs, NPUs, and custom AI accelerators — that every other layer of the stack ultimately runs on.",
+      "subComponents": [
+        {
+          "id": "gpu-accelerators",
+          "name": "GPU & AI Accelerators",
+          "description": "General-purpose and AI-specific parallel processors used for training and inference."
+        },
+        {
+          "id": "custom-silicon",
+          "name": "Custom Silicon (ASIC/NPU)",
+          "description": "Purpose-built chips designed for a specific AI workload or company."
+        },
+        {
+          "id": "interconnect",
+          "name": "Chip-to-Chip Interconnect",
+          "description": "High-speed links (e.g. NVLink-class fabrics) that let many chips act as one cluster."
+        }
+      ],
+      "players": [
+        {
+          "name": "NVIDIA",
+          "ticker": "NVDA",
+          "keyProducts": "GPUs (H100/Blackwell), CUDA platform, DGX systems"
+        },
+        {
+          "name": "AMD",
+          "ticker": "AMD",
+          "keyProducts": "Instinct AI accelerators, EPYC server CPUs, Ryzen CPUs"
+        },
+        {
+          "name": "Intel",
+          "ticker": "INTC",
+          "keyProducts": "Xeon server CPUs, Gaudi AI accelerators, Core CPUs"
+        },
+        {
+          "name": "Qualcomm",
+          "ticker": "QCOM",
+          "keyProducts": "Snapdragon mobile/AI chips, Cloud AI accelerators"
+        },
+        {
+          "name": "Broadcom",
+          "ticker": "AVGO",
+          "keyProducts": "Custom AI ASICs (XPUs), networking silicon, VMware software"
+        }
+      ]
+    },
+    {
+      "id": "fabrication",
+      "order": 2,
+      "name": "Chip Fabrication & Manufacturing Equipment",
+      "hoverDescription": [
+        "Foundries that physically manufacture chips, plus makers of the equipment used to fabricate them.",
+        "A separate market from chip design, with different economics, players, and capital cycles."
+      ],
+      "overview": "Turns chip designs into physical silicon — the foundries and the lithography/equipment makers that supply them.",
+      "subComponents": [
+        {
+          "id": "foundries",
+          "name": "Advanced-Node Foundries",
+          "description": "Contract manufacturers that fabricate chips designed by other companies."
+        },
+        {
+          "id": "lithography",
+          "name": "Lithography & Fab Equipment",
+          "description": "The machinery foundries depend on to print circuits at advanced nodes."
+        },
+        {
+          "id": "packaging",
+          "name": "Advanced Packaging",
+          "description": "Techniques (e.g. chiplet packaging) that combine multiple dies into one package."
+        }
+      ],
+      "players": [
+        {
+          "name": "TSMC",
+          "ticker": "TSM",
+          "keyProducts": "N2/N3/N5 process nodes, CoWoS advanced packaging, TSMC Foundry Services"
+        },
+        {
+          "name": "Samsung Foundry",
+          "ticker": null
+        },
+        {
+          "name": "ASML",
+          "ticker": "ASML",
+          "keyProducts": "Extreme ultraviolet (EUV) lithography systems"
+        }
+      ]
+    },
+    {
+      "id": "cloud-infra",
+      "order": 3,
+      "name": "Cloud & AI Infrastructure",
+      "hoverDescription": [
+        "Hyperscale compute providers and data-center operators that host AI training/inference workloads.",
+        "Includes traditional hyperscalers and newer AI-specific compute providers."
+      ],
+      "overview": "Provides the data-center scale compute, storage, and networking that AI workloads actually run on, rented by the hour or committed contract.",
+      "subComponents": [
+        {
+          "id": "hyperscale-cloud",
+          "name": "Hyperscale Cloud Platforms",
+          "description": "Full-service cloud providers offering AI compute alongside their broader cloud catalog."
+        },
+        {
+          "id": "gpu-cloud",
+          "name": "Specialist GPU Cloud",
+          "description": "Providers focused specifically on renting AI accelerator capacity."
+        },
+        {
+          "id": "datacenter-ops",
+          "name": "Data Center Operations & Power",
+          "description": "Physical facility build-out, cooling, and energy supply for AI compute clusters."
+        }
+      ],
+      "players": [
+        {
+          "name": "Amazon (AWS)",
+          "ticker": "AMZN",
+          "keyProducts": "EC2 compute, Trainium/Inferentia chips, Bedrock"
+        },
+        {
+          "name": "Microsoft (Azure)",
+          "ticker": "MSFT",
+          "keyProducts": "Azure cloud platform, Azure AI services"
+        },
+        {
+          "name": "Google Cloud",
+          "ticker": "GOOGL",
+          "keyProducts": "Google Cloud Platform, Vertex AI, TPU silicon"
+        },
+        {
+          "name": "Oracle Cloud",
+          "ticker": "ORCL",
+          "keyProducts": "Oracle Cloud Infrastructure (OCI), Cloud@Customer"
+        },
+        {
+          "name": "CoreWeave",
+          "ticker": "CRWV",
+          "keyProducts": "GPU cloud infrastructure, AI Object Storage"
+        }
+      ]
+    },
+    {
+      "id": "data-layer",
+      "order": 4,
+      "name": "Data Infrastructure & Management",
+      "hoverDescription": [
+        "Platforms for storing, processing, and retrieving the data that trains and feeds AI systems, including vector databases.",
+        "Underpins both model training and real-time AI application performance."
+      ],
+      "overview": "Stores, organizes, and serves the data — structured and unstructured — that AI models are trained and grounded on.",
+      "subComponents": [
+        {
+          "id": "data-warehousing",
+          "name": "Data Warehousing & Lakes",
+          "description": "Large-scale storage and querying of structured and semi-structured data."
+        },
+        {
+          "id": "vector-db",
+          "name": "Vector & Embedding Databases",
+          "description": "Specialized storage for the numerical representations AI models use for retrieval."
+        },
+        {
+          "id": "data-labeling",
+          "name": "Data Labeling & Curation",
+          "description": "Preparing and annotating data for model training."
+        }
+      ],
+      "players": [
+        {
+          "name": "Snowflake",
+          "ticker": "SNOW",
+          "keyProducts": "Cloud data warehousing, Snowflake Cortex AI"
+        },
+        {
+          "name": "Databricks",
+          "ticker": null
+        },
+        {
+          "name": "MongoDB",
+          "ticker": "MDB",
+          "keyProducts": "MongoDB Atlas, vector search"
+        }
+      ]
+    },
+    {
+      "id": "foundation-models",
+      "order": 5,
+      "name": "Foundation Models / Frontier AI Labs",
+      "hoverDescription": [
+        "Organizations that build and release large-scale AI models (language, multimodal, etc.).",
+        "The “intelligence layer” — the core models other layers build on top of."
+      ],
+      "overview": "Trains and releases the large-scale models — language, vision, multimodal — that act as the reasoning core for the rest of the stack.",
+      "subComponents": [
+        {
+          "id": "llms",
+          "name": "Large Language Models",
+          "description": "General-purpose text and reasoning models."
+        },
+        {
+          "id": "multimodal",
+          "name": "Multimodal Models",
+          "description": "Models spanning text, image, audio, and video."
+        },
+        {
+          "id": "open-weight",
+          "name": "Open-Weight Models",
+          "description": "Models released with publicly downloadable weights."
+        }
+      ],
+      "players": [
+        {
+          "name": "OpenAI",
+          "ticker": null
+        },
+        {
+          "name": "Anthropic",
+          "ticker": null
+        },
+        {
+          "name": "Google DeepMind",
+          "ticker": "DEEPMIND_PROXY",
+          "keyProducts": "Gemini AI models, AlphaFold, Veo video generation, AI research"
+        },
+        {
+          "name": "Meta AI",
+          "ticker": "META_AI_PROXY",
+          "keyProducts": "Llama open-weight models, Meta AI assistant, PyTorch framework"
+        },
+        {
+          "name": "xAI",
+          "ticker": null
+        },
+        {
+          "name": "Mistral AI",
+          "ticker": null
+        }
+      ]
+    },
+    {
+      "id": "mlops-tooling",
+      "order": 6,
+      "name": "MLOps & Model Development Tooling",
+      "hoverDescription": [
+        "Platforms for training, fine-tuning, evaluating, and monitoring AI models through their lifecycle.",
+        "Bridges raw models and production-ready deployment."
+      ],
+      "overview": "Provides the tooling teams use to fine-tune, evaluate, version, and monitor models from experiment to production.",
+      "subComponents": [
+        {
+          "id": "model-hubs",
+          "name": "Model Hubs & Registries",
+          "description": "Repositories for sharing and versioning pretrained and fine-tuned models."
+        },
+        {
+          "id": "experiment-tracking",
+          "name": "Experiment Tracking",
+          "description": "Tools for logging and comparing training runs."
+        },
+        {
+          "id": "eval-monitoring",
+          "name": "Evaluation & Monitoring",
+          "description": "Tools for testing model quality and tracking production performance."
+        }
+      ],
+      "players": [
+        {
+          "name": "Hugging Face",
+          "ticker": null
+        },
+        {
+          "name": "Weights & Biases",
+          "ticker": null
+        },
+        {
+          "name": "Scale AI",
+          "ticker": null
+        }
+      ]
+    },
+    {
+      "id": "agent-orchestration",
+      "order": 7,
+      "name": "AI Agent & Orchestration Layer",
+      "hoverDescription": [
+        "Frameworks that connect models to external tools, data, and multi-step workflows (agents, RAG pipelines).",
+        "A distinct, fast-growing segment separate from the underlying foundation models themselves."
+      ],
+      "overview": "Connects raw models to tools, memory, and external data so they can carry out multi-step tasks rather than answer single prompts.",
+      "subComponents": [
+        {
+          "id": "agent-frameworks",
+          "name": "Agent Frameworks",
+          "description": "Libraries for building multi-step, tool-using AI agents."
+        },
+        {
+          "id": "rag-pipelines",
+          "name": "RAG Pipelines",
+          "description": "Systems that retrieve external knowledge to ground model responses."
+        },
+        {
+          "id": "orchestration-middleware",
+          "name": "Orchestration Middleware",
+          "description": "Infrastructure for chaining prompts, tools, and models into workflows."
+        }
+      ],
+      "players": [
+        {
+          "name": "LangChain",
+          "ticker": null
+        },
+        {
+          "name": "LlamaIndex",
+          "ticker": null
+        }
+      ]
+    },
+    {
+      "id": "application-layer",
+      "order": 8,
+      "name": "Application Layer",
+      "hoverDescription": [
+        "Enterprise and consumer-facing products that embed AI to deliver a specific end-user function.",
+        "Where AI capability is ultimately monetized as a finished product or service."
+      ],
+      "overview": "The finished products — enterprise and consumer — where AI capability is packaged into something a person actually uses.",
+      "subComponents": [
+        {
+          "id": "enterprise-ai",
+          "name": "Enterprise AI Applications",
+          "description": "AI embedded into business software (CRM, ITSM, productivity suites)."
+        },
+        {
+          "id": "consumer-ai",
+          "name": "Consumer AI Applications",
+          "description": "AI-first products aimed directly at individual end users."
+        },
+        {
+          "id": "vertical-ai",
+          "name": "Vertical AI (industry-specific)",
+          "description": "AI applications built for a specific industry, e.g. legal, healthcare, finance."
+        }
+      ],
+      "players": [
+        {
+          "name": "Microsoft (Copilot)",
+          "ticker": "MSFT",
+          "keyProducts": "Microsoft 365 Copilot, GitHub Copilot"
+        },
+        {
+          "name": "Salesforce (Einstein/Agentforce)",
+          "ticker": "CRM",
+          "keyProducts": "Agentforce, Einstein AI, Salesforce CRM"
+        },
+        {
+          "name": "ServiceNow",
+          "ticker": "NOW",
+          "keyProducts": "Now Platform, AI Agents for ITSM/HR/CSM"
+        }
+      ]
+    },
+    {
+      "id": "governance-safety",
+      "order": 9,
+      "name": "AI Governance, Safety & Compliance Tooling",
+      "hoverDescription": [
+        "Vendors building model evaluation, red-teaming, observability, and regulatory-compliance software for AI systems.",
+        "A market segment in its own right, distinct from policy/regulatory bodies themselves."
+      ],
+      "overview": "Builds the software companies use to test, monitor, and document AI systems for safety and regulatory compliance — a vendor market, not the policymakers themselves.",
+      "subComponents": [
+        {
+          "id": "model-evaluation",
+          "name": "Model Evaluation & Red-Teaming",
+          "description": "Tools for systematically testing model behavior and vulnerabilities."
+        },
+        {
+          "id": "ai-observability",
+          "name": "AI Observability",
+          "description": "Monitoring AI systems in production for drift, errors, and misuse."
+        },
+        {
+          "id": "compliance-software",
+          "name": "Regulatory Compliance Software",
+          "description": "Tools for documenting and demonstrating compliance with AI regulation."
+        }
+      ],
+      "players": [
+        {
+          "name": "Credo AI",
+          "ticker": null
+        },
+        {
+          "name": "Holistic AI",
+          "ticker": null
+        }
+      ]
+    }
+  ]
+}

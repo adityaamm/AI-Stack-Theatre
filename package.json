@@ -1,0 +1,10 @@
+{
+  "name": "ai-stack-theatre",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Stack Overview Theatre — live, source-cited AI industry dashboard.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

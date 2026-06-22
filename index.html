@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Stack Overview Theatre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080B11;
+  --bg-deep:#04060A;
+  --surface:#0F1520;
+  --surface-2:#141B29;
+  --border:#202A3B;
+  --text:#E7EFFB;
+  --muted:#8493AC;
+  --cyan:#00E5FF;
+  --violet:#B26CFF;
+  --green:#2BD97C;
+  --amber:#FFB020;
+  --red:#FF4D6A;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+}
+
+/* ===== LANDING ===== */
+#landing{
+  position:relative;
+  height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden;
+  text-align:center;
+  padding:24px;
+}
+#landing canvas{position:absolute; inset:0; width:100%; height:100%; z-index:0;}
+.landing-content{position:relative; z-index:2; max-width:760px;}
+.eyebrow{
+  font-family:var(--font-mono); font-size:12px; letter-spacing:.25em; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:18px; opacity:.85;
+}
+h1.title{
+  font-family:var(--font-display); font-weight:700;
+  font-size:clamp(2.4rem,6vw,4.6rem); line-height:1.05; letter-spacing:-.01em;
+  background:linear-gradient(100deg,#fff 10%,var(--cyan) 45%,var(--violet) 80%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 0 60px rgba(0,229,255,.25);
+  animation:title-glow 4.5s ease-in-out infinite;
+}
+@keyframes title-glow{
+  0%,100%{filter:drop-shadow(0 0 18px rgba(0,229,255,.35));}
+  50%{filter:drop-shadow(0 0 34px rgba(178,108,255,.45));}
+}
+.subtitle{margin-top:18px; color:var(--muted); font-size:1.05rem; line-height:1.6;}
+.enter-btn{
+  margin-top:42px; font-family:var(--font-display); font-weight:600; font-size:1rem;
+  letter-spacing:.04em; color:var(--bg-deep); background:var(--cyan); border:none;
+  padding:16px 42px; border-radius:999px; cursor:pointer; position:relative;
+  box-shadow:0 0 24px rgba(0,229,255,.55), 0 0 60px rgba(0,229,255,.25);
+  animation:pulse-btn 2.4s ease-in-out infinite;
+  transition:transform .2s ease;
+}
+.enter-btn:hover{transform:translateY(-2px);}
+@keyframes pulse-btn{
+  0%,100%{box-shadow:0 0 24px rgba(0,229,255,.55), 0 0 60px rgba(0,229,255,.25);}
+  50%{box-shadow:0 0 34px rgba(0,229,255,.85), 0 0 90px rgba(0,229,255,.4);}
+}
+.landing-links{margin-top:28px; display:flex; gap:18px; justify-content:center; flex-wrap:wrap;}
+.link-btn{
+  font-family:var(--font-mono); font-size:12px; color:var(--muted); background:none;
+  border:1px solid var(--border); padding:9px 16px; border-radius:8px; cursor:pointer;
+  letter-spacing:.04em; transition:all .2s ease;
+}
+.link-btn:hover{color:var(--cyan); border-color:var(--cyan);}
+
+/* ===== DIALOG (source/methods + disclaimer modal) ===== */
+.dialog-backdrop{
+  position:fixed; inset:0; background:rgba(4,6,10,.78); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; z-index:200; padding:24px;
+}
+.dialog-backdrop.open{display:flex;}
+.dialog{
+  background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  max-width:640px; width:100%; max-height:80vh; overflow-y:auto; padding:28px;
+  box-shadow:0 0 80px rgba(0,229,255,.08);
+}
+.dialog h2{font-family:var(--font-display); font-size:1.3rem; margin-bottom:14px; color:var(--cyan);}
+.dialog h3{font-family:var(--font-display); font-size:.95rem; margin:18px 0 8px; color:var(--text);}
+.dialog p, .dialog li{font-size:.88rem; line-height:1.6; color:var(--muted);}
+.dialog ul{padding-left:18px; margin-top:6px;}
+.dialog .close-x{
+  position:absolute; top:18px; right:18px; background:none; border:none; color:var(--muted);
+  font-size:1.4rem; cursor:pointer; line-height:1;
+}
+.dialog{position:relative;}
+.source-tag{
+  display:inline-block; font-family:var(--font-mono); font-size:10px; padding:3px 8px;
+  border-radius:5px; border:1px solid var(--border); color:var(--cyan); margin:2px 4px 2px 0;
+}
+
+/* ===== THEATRE CIRCUIT BACKGROUND ===== */
+#theatre{
+  background-image:
+    linear-gradient(rgba(0,229,255,0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.028) 1px, transparent 1px),
+    linear-gradient(rgba(178,108,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(178,108,255,0.015) 1px, transparent 1px);
+  background-size: 54px 54px, 54px 54px, 108px 108px, 108px 108px;
+}
+
+
+#theatre{display:none; min-height:100vh;}
+#theatre.active{display:block;}
+.topbar{
+  position:sticky; top:0; z-index:50; background:rgba(8,11,17,.92); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.ticker-row{display:flex; align-items:center; padding:10px 20px; gap:16px;}
+.ticker-label{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; color:var(--violet);
+  white-space:nowrap; text-transform:uppercase; flex-shrink:0;
+}
+.ticker-track{flex:1; overflow:hidden; position:relative; height:22px;}
+.ticker-inner{
+  position:absolute; white-space:nowrap; display:flex; gap:48px; align-items:center;
+  animation:ticker-scroll 152s linear infinite;
+  font-family:var(--font-mono); font-size:12.5px; color:var(--text);
+}
+.ticker-inner:hover{animation-play-state:paused;}
+@keyframes ticker-scroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+.ticker-item .src{color:var(--cyan); margin-right:6px;}
+.refresh-btn{
+  flex-shrink:0; display:flex; align-items:center; gap:8px; background:var(--surface-2);
+  border:1px solid var(--cyan); color:var(--cyan); font-family:var(--font-mono); font-size:11px;
+  padding:8px 14px; border-radius:999px; cursor:pointer; letter-spacing:.05em;
+  box-shadow:0 0 14px rgba(0,229,255,.4); animation:pulse-btn 2.2s ease-in-out infinite;
+}
+.refresh-btn svg{width:14px; height:14px; animation:spin-idle 6s linear infinite;}
+.refresh-btn.refreshing svg{animation:spin-fast .6s linear infinite;}
+@keyframes spin-idle{from{transform:rotate(0);} to{transform:rotate(360deg);}}
+@keyframes spin-fast{from{transform:rotate(0);} to{transform:rotate(360deg);}}
+.timestamp-row{
+  padding:6px 20px 12px; font-family:var(--font-mono); font-size:10.5px; color:var(--muted);
+  border-bottom:1px solid var(--border); line-height:1.5;
+}
+.timestamp-row b{color:var(--text); font-weight:500;}
+
+/* ===== STACK (horizontal waterfall) ===== */
+.stack-wrap{padding:48px 0 100px;}
+.stack-wrap.compact{
+  position:sticky; top:var(--topbar-h, 100px); z-index:10;
+  background:var(--bg); padding:12px 0 10px;
+  border-bottom:1px solid var(--border);
+  box-shadow:0 4px 20px rgba(0,0,0,.45);
+}
+.stack-heading{padding:0 32px; margin-bottom:28px;}
+.stack-heading h2{font-family:var(--font-display); font-size:1.8rem;}
+.stack-heading p{color:var(--muted); margin-top:6px; max-width:640px;}
+.stack-scroll{
+  display:flex; gap:0; overflow-x:auto; padding:20px 32px 40px; scroll-snap-type:x proximity;
+  position:relative;
+}
+.stack-scroll::-webkit-scrollbar{height:8px;}
+.stack-scroll::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+.layer-node{
+  position:relative; flex:0 0 240px; scroll-snap-align:start; margin-right:64px;
+}
+.layer-node:last-child{margin-right:0;}
+.layer-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:20px; cursor:pointer; transition:all .25s ease; height:100%;
+  position:relative; z-index:2;
+}
+.layer-card:hover, .layer-card:focus-visible{
+  border-color:var(--cyan); box-shadow:0 0 26px rgba(0,229,255,.25); transform:translateY(-4px);
+}
+.layer-num{font-family:var(--font-mono); font-size:11px; color:var(--violet);}
+.layer-name{font-family:var(--font-display); font-size:1.05rem; margin:8px 0 10px; line-height:1.25;}
+.layer-desc-box{ width:auto; max-width:640px; margin:0 0 28px;
+  background:var(--cyan); border:1px solid var(--cyan); border-left:3px solid var(--cyan);
+  border-radius:10px; padding:14px 18px;
+  font-size:13px; color:var(--bg-deep); box-shadow:0 0 18px rgba(0,229,255,.35);
+}
+.layer-desc-box ul{padding-left:18px; margin:0;}
+.layer-desc-box li{margin-bottom:5px; color:var(--bg-deep); font-weight:500;}
+.flow-arrow{
+  position:absolute; top:50%; left:100%; width:64px; height:2px; transform:translateY(-50%);
+  z-index:1;
+}
+.flow-arrow svg{width:100%; height:24px; overflow:visible;}
+.layer-card.selected{border-color:var(--cyan); box-shadow:0 0 22px rgba(0,229,255,.4);}
+
+/* Compact mode: stack stays visible above the detail pane, shrunk down */
+.stack-wrap.compact .stack-heading{margin-bottom:14px;}
+.stack-wrap.compact .stack-heading h2{font-size:1.1rem;}
+.stack-wrap.compact .stack-heading p{display:none;}
+.stack-wrap.compact .stack-scroll{padding:10px 32px 18px;}
+.stack-wrap.compact .layer-node{flex:0 0 128px; margin-right:26px;}
+.stack-wrap.compact .layer-card{padding:10px 12px;}
+.stack-wrap.compact .layer-card.selected{
+  border-color:var(--cyan);
+  box-shadow:0 0 28px rgba(0,229,255,.55), 0 0 60px rgba(0,229,255,.25);
+  animation:title-glow 2.5s ease-in-out infinite;
+}
+.stack-wrap.compact .layer-num{font-size:9px;}
+.stack-wrap.compact .layer-name{font-size:.78rem; margin:4px 0 0; line-height:1.2;}
+.stack-wrap.compact .flow-arrow{width:26px;}
+.flow-line{stroke:var(--cyan); stroke-width:2; fill:none; opacity:.5;}
+.flow-pulse{stroke:var(--cyan); stroke-width:2; fill:none; stroke-dasharray:6 220;
+  animation:flow-move 2.6s linear infinite; filter:drop-shadow(0 0 4px var(--cyan));}
+@keyframes flow-move{from{stroke-dashoffset:0;} to{stroke-dashoffset:-226;}}
+
+/* ===== DETAIL PANEL ===== */
+.detail-panel{display:none; padding:0 32px 80px;}
+.detail-panel.active{display:block;}
+.back-link{
+  font-family:var(--font-mono); font-size:12px; color:var(--cyan); background:none; border:none;
+  cursor:pointer; margin-bottom:20px; display:inline-flex; align-items:center; gap:6px;
+}
+.dev-banner{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;
+  margin-bottom:32px;
+}
+.dev-card{
+  background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--violet);
+  border-radius:10px; padding:14px 16px;
+}
+.dev-card .tag{font-family:var(--font-mono); font-size:10px; color:var(--violet); text-transform:uppercase;}
+.dev-card p{font-size:13px; margin-top:6px; color:var(--text); line-height:1.45;}
+.layer-title{font-family:var(--font-display); font-size:2rem; margin-bottom:10px;}
+.layer-overview{color:var(--muted); max-width:760px; margin-bottom:36px; line-height:1.6;}
+
+.section-label{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:14px; display:block;
+}
+.subcomp-flow{display:flex; gap:16px; flex-wrap:wrap; margin-bottom:44px;}
+.subcomp-chip{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px;
+  cursor:pointer; min-width:200px; flex:1 1 220px; transition:all .2s ease;
+}
+.subcomp-chip:hover{border-color:var(--violet); box-shadow:0 0 18px rgba(178,108,255,.25);}
+.subcomp-chip h4{font-family:var(--font-display); font-size:.95rem; margin-bottom:6px;}
+.subcomp-chip p{font-size:12.5px; color:var(--muted); line-height:1.5;}
+
+.tam-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:44px;}
+.tam-card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px;}
+.tam-card .label{font-family:var(--font-mono); font-size:10.5px; color:var(--muted); text-transform:uppercase;}
+.tam-card .value{font-family:var(--font-mono); font-size:1.3rem; margin-top:8px; color:var(--text);}
+.pending{color:var(--muted); font-style:normal; font-size:.85em;}
+.pending::before{content:"\25CB "; color:var(--amber);}
+
+.players-table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:12px; margin-bottom:20px;}
+table.players{width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:12px; min-width:1400px;}
+table.players th{
+  text-align:left; padding:12px 14px; background:var(--surface-2); color:var(--cyan);
+  font-weight:500; text-transform:uppercase; font-size:10.5px; letter-spacing:.05em;
+  position:sticky; top:0; border-bottom:1px solid var(--border);
+}
+table.players th:first-child{
+  left:0; z-index:3; background:var(--surface-2);
+}
+table.players td{padding:12px 14px; border-bottom:1px solid var(--border); color:var(--text); white-space:nowrap;}
+table.players td:first-child{
+  position:sticky; left:0; z-index:1; background:var(--surface); font-weight:600;
+  border-right:1px solid var(--border);
+}
+table.players tr:hover td:first-child{background:var(--surface-2);}
+table.players tr:hover td{background:rgba(0,229,255,.04);}
+.rag-badge{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px;}
+.rag-green{background:var(--green); box-shadow:0 0 8px var(--green);}
+.rag-amber{background:var(--amber); box-shadow:0 0 8px var(--amber);}
+.rag-red{background:var(--red); box-shadow:0 0 8px var(--red);}
+.rag-pending{background:var(--muted);}
+
+/* ===== SUB-DRILLDOWN (level 2 modal) ===== */
+.drill-backdrop{
+  position:fixed; inset:0; background:rgba(4,6,10,.8); backdrop-filter:blur(4px);
+  display:none; align-items:flex-start; justify-content:center; z-index:150; padding:60px 24px;
+  overflow-y:auto;
+}
+.drill-backdrop.open{display:flex;}
+.drill-panel{
+  background:var(--surface); border:1px solid var(--cyan); border-radius:16px; max-width:680px;
+  width:100%; padding:32px; position:relative; box-shadow:0 0 60px rgba(0,229,255,.15);
+}
+.drill-panel h3{font-family:var(--font-display); font-size:1.4rem; color:var(--cyan); margin-bottom:14px;}
+.drill-panel p{color:var(--muted); line-height:1.6; margin-bottom:10px;}
+
+/* ===== DISCLAIMER (floating, persistent) ===== */
+.disclaimer-bar{
+  position:fixed; bottom:0; left:0; right:0; z-index:100; background:rgba(10,14,20,.97);
+  border-top:1px solid var(--border); backdrop-filter:blur(8px);
+  display:flex; align-items:center; gap:14px; padding:10px 20px;
+}
+.disclaimer-bar p{font-size:11.5px; color:var(--muted); line-height:1.4; flex:1;}
+.disclaimer-bar button{
+  font-family:var(--font-mono); font-size:11px; color:var(--cyan); background:none;
+  border:1px solid var(--border); padding:7px 12px; border-radius:7px; cursor:pointer; flex-shrink:0;
+}
+
+@media (max-width:720px){
+  .ticker-label{display:none;}
+  .layer-node{flex:0 0 200px; margin-right:36px;}
+  table.players{min-width:1100px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING ============ -->
+<section id="landing">
+  <canvas id="bgCanvas"></canvas>
+  <div class="landing-content">
+    <div class="eyebrow">Live &middot; Interactive &middot; Source-Cited</div>
+    <h1 class="title">AI Stack Overview Theatre</h1>
+    <p class="subtitle">A live, drill-down map of the global AI industry &mdash; nine layers, their players, and the data behind them, refreshed from named public sources.</p>
+    <button class="enter-btn" id="enterBtn">Enter the Theatre</button>
+    <div class="landing-links">
+      <button class="link-btn" id="openSourceDialog">How data is refreshed &amp; sourced</button>
+      <button class="link-btn" id="openDisclaimerDialog">Read full disclaimer</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOURCE / METHOD DIALOG ============ -->
+<div class="dialog-backdrop" id="sourceDialogBackdrop">
+  <div class="dialog">
+    <button class="close-x" data-close="sourceDialogBackdrop" aria-label="Close">&times;</button>
+    <h2>How live data is refreshed</h2>
+    <p>This tool combines two refresh speeds. <b style="color:var(--text)">Live market data</b> (price, market capitalization, filed company fundamentals) refreshes automatically every 48 hours, or instantly when you press Refresh, via free, authorized public APIs. <b style="color:var(--text)">Research-baseline data</b> (market sizing, growth assumptions) refreshes monthly via the same automated, in-site mechanism, drawing only on named, open, or explicitly licensed public sources.</p>
+
+    <h3>Live market data sources</h3>
+    <span class="source-tag">Finnhub API</span><span class="source-tag">SEC EDGAR (data.sec.gov)</span>
+    <p style="margin-top:8px;">SEC EDGAR provides filed company fundamentals (revenue, debt-related figures, operating cash flow) for SEC-registered filers only &mdash; it does not provide live price or market capitalization, and does not cover privately held companies.</p>
+
+    <h3>News &amp; policy ticker sources</h3>
+    <span class="source-tag">TechCrunch (RSS, per published terms)</span>
+    <span class="source-tag">NIST</span><span class="source-tag">Federal Register</span>
+    <span class="source-tag">Federal Reserve</span>
+    <span class="source-tag">WHO</span>
+
+    <h3>Research-baseline sources (market sizing &amp; projections)</h3>
+    <span class="source-tag">Stanford HAI &ndash; AI Index</span>
+    <span class="source-tag">World Economic Forum (CC BY-NC-ND)</span>
+    <span class="source-tag">World Bank Open Data</span>
+    <span class="source-tag">IMF Data</span>
+    <span class="source-tag">Eurostat</span>
+    <p style="margin-top:8px;">Each figure shown carries its own citation and "as of" date. Where a data point (e.g. order book value) is not disclosed in the public domain, it is labeled accordingly rather than estimated.</p>
+
+    <h3>What this tool does not do</h3>
+    <ul>
+      <li>It does not scrape paywalled content or bypass any source's terms of use.</li>
+      <li>It does not call any AI/Claude service to refresh data &mdash; all refresh logic is deterministic code against the named APIs above.</li>
+      <li>It does not provide investment advice or recommendations.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ DISCLAIMER DIALOG ============ -->
+<div class="dialog-backdrop" id="disclaimerDialogBackdrop">
+  <div class="dialog">
+    <button class="close-x" data-close="disclaimerDialogBackdrop" aria-label="Close">&times;</button>
+    <h2>Disclaimer</h2>
+    <p><b style="color:var(--text)">Purpose.</b> The AI Stack Overview Theatre is provided strictly for general informational and educational purposes. It is non-commercial in nature and is not operated for profit, advertising, or any commercial gain.</p>
+    <p style="margin-top:10px;"><b style="color:var(--text)">Not investment advice.</b> Nothing in this tool constitutes financial, investment, legal, or tax advice, or a recommendation to buy, sell, or hold any security or asset. Market capitalization prospects, growth projections, and RAG indicators are derived estimates based on publicly available data and named methodologies &mdash; they are not forecasts of guaranteed outcomes. Consult a licensed financial advisor before making investment decisions.</p>
+    <p style="margin-top:10px;"><b style="color:var(--text)">No intellectual property claimed.</b> All underlying data, figures, and citations remain the property of their respective original sources. This tool claims no ownership or intellectual property rights over any third-party data, and reproduces only what each source's published terms of use permit, with attribution.</p>
+    <p style="margin-top:10px;"><b style="color:var(--text)">Data privacy.</b> This tool does not collect, store, or process any personal data from visitors. It does not use cookies, trackers, or analytics. All data displayed is publicly sourced market, company, and policy information &mdash; not personal data under any applicable data protection regulation.</p>
+    <p style="margin-top:10px;"><b style="color:var(--text)">Accuracy.</b> While every effort is made to cite only authentic, verifiable, named sources and to avoid fabricated or inferred figures, this tool is provided "as is" without warranty of completeness, accuracy, or fitness for any particular purpose. Always verify critical figures against the original cited source before relying on them.</p>
+  </div>
+</div>
+
+<!-- ============ THEATRE ============ -->
+<section id="theatre">
+  <div class="topbar">
+    <div class="ticker-row">
+      <span class="ticker-label">AI in News</span>
+      <div class="ticker-track"><div class="ticker-inner" id="tickerInner"></div></div>
+      <button class="refresh-btn" id="refreshBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg>
+        Refresh
+      </button>
+    </div>
+    <div class="timestamp-row" id="timestampRow"></div>
+  </div>
+
+  <div class="stack-wrap" id="stackView">
+    <div class="stack-heading">
+      <h2>The AI Stack &mdash; Nine Layers</h2>
+      <p>Scroll horizontally. Click any layer to open its overview, sub-components, players, and market data.</p>
+    </div>
+    <div class="stack-scroll" id="stackScroll"></div>
+  </div>
+
+  <div class="detail-panel" id="detailPanel"></div>
+</section>
+
+<!-- ============ LEVEL-2 DRILLDOWN MODAL ============ -->
+<div class="drill-backdrop" id="drillBackdrop">
+  <div class="drill-panel" id="drillPanelContent"></div>
+</div>
+
+<!-- ============ FLOATING DISCLAIMER ============ -->
+<div class="disclaimer-bar">
+  <p>Informational &amp; non-commercial use only. Not investment advice. No IP claimed over source data. No personal data is collected by this tool.</p>
+  <button id="disclaimerBarBtn">Full disclaimer</button>
+</div>
+
+<script>
+/* ============ CIRCUIT BOARD ANIMATION — LANDING PAGE ============ */
+(function(){
+  const canvas = document.getElementById('bgCanvas');
+  const ctx    = canvas.getContext('2d');
+  const GRID   = 54;
+  const PKT_CLR = ['#00E5FF','#B26CFF','#2BD97C','#FFB020'];
+  let W, H, nodes=[], traces=[], packets=[];
+
+  function rnd(a,b){ return a + Math.random()*(b-a); }
+
+  function build(){
+    nodes=[]; traces=[]; packets=[];
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    const cols = Math.ceil(W/GRID)+1, rows = Math.ceil(H/GRID)+1;
+    for(let r=0;r<=rows;r++){
+      for(let c=0;c<=cols;c++){
+        if(Math.random()<0.42){
+          nodes.push({
+            x: c*GRID + rnd(-4,4), y: r*GRID + rnd(-4,4),
+            phase: rnd(0,Math.PI*2), ps: rnd(0.025,0.055), sz: rnd(2,4)
+          });
+        }
+      }
+    }
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i], b=nodes[j];
+        const dx=Math.abs(a.x-b.x), dy=Math.abs(a.y-b.y);
+        if(dx<GRID*1.7 && dy<GRID*1.7 && Math.random()<0.28){
+          const tr={a, b, alpha:rnd(0.07,0.22)};
+          traces.push(tr);
+          if(Math.random()<0.22){
+            packets.push({a, b, t:Math.random(),
+              spd: rnd(0.0025,0.007),
+              dir: Math.random()<0.5?1:-1,
+              color: PKT_CLR[Math.floor(Math.random()*PKT_CLR.length)]
+            });
+          }
+        }
+      }
+    }
+  }
+
+  function pcbLine(x1,y1,x2,y2){
+    const mx = x1+(x2-x1)*0.5;
+    ctx.beginPath(); ctx.moveTo(x1,y1);
+    if(Math.abs(x2-x1)<6||Math.abs(y2-y1)<6){ ctx.lineTo(x2,y2); }
+    else { ctx.lineTo(mx,y1); ctx.lineTo(mx,y2); ctx.lineTo(x2,y2); }
+    ctx.stroke();
+  }
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+
+    /* traces */
+    ctx.lineWidth=1.2;
+    for(const t of traces){
+      ctx.strokeStyle=`rgba(0,229,255,${t.alpha*0.65})`;
+      pcbLine(t.a.x,t.a.y,t.b.x,t.b.y);
+    }
+
+    /* pads / vias */
+    for(const n of nodes){
+      n.phase+=n.ps;
+      const b=0.45+0.55*Math.sin(n.phase), r=n.sz+b*1.6;
+      const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,r*4);
+      g.addColorStop(0,`rgba(0,229,255,${0.28*b})`);
+      g.addColorStop(0.5,`rgba(178,108,255,${0.10*b})`);
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g;
+      ctx.beginPath(); ctx.arc(n.x,n.y,r*4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=`rgba(0,229,255,${0.55+0.45*b})`;
+      ctx.beginPath(); ctx.arc(n.x,n.y,r,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=`rgba(0,229,255,${0.3*b})`; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(n.x,n.y,r+3,0,Math.PI*2); ctx.stroke();
+    }
+
+    /* data packets */
+    ctx.shadowBlur=0;
+    for(const pk of packets){
+      pk.t+=pk.spd*pk.dir;
+      if(pk.t>=1||pk.t<=0){pk.dir*=-1; pk.t=Math.max(0,Math.min(1,pk.t));}
+      const px=pk.a.x+(pk.b.x-pk.a.x)*pk.t;
+      const py=pk.a.y+(pk.b.y-pk.a.y)*pk.t;
+      const g2=ctx.createRadialGradient(px,py,0,px,py,10);
+      const rgb = pk.color==='#00E5FF'?'0,229,255':pk.color==='#B26CFF'?'178,108,255':pk.color==='#2BD97C'?'43,217,124':'255,176,32';
+      g2.addColorStop(0,`rgba(${rgb},0.55)`); g2.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g2; ctx.beginPath(); ctx.arc(px,py,10,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=pk.color; ctx.shadowBlur=12; ctx.shadowColor=pk.color;
+      ctx.beginPath(); ctx.arc(px,py,2.8,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('resize', build);
+  build(); tick();
+})();
+
+/* ============ APP STATE ============ */
+let STACK_DATA = null;
+let TIER_A_STATE = { lastRefreshed: null };
+let TIER_B_STATE = { lastResearched: null };
+let LIVE_SNAPSHOT = null; // populated from /.netlify/functions/get-data once deployed
+let LIVE_TIER_B_LAYERS = null; // layer-level TAM/TOM, from the same response
+let CURRENT_OPEN_LAYER = null;
+// Pre-computed derived cache: keyed by ticker, computed on every refresh + on init.
+// Ensures RAG/projections render even before a Refresh is clicked.
+const DERIVED_CACHE = {};
+
+function rebuildDerivedCache() {
+  if (!STACK_DATA) return;
+  STACK_DATA.layers.forEach(layer => {
+    layer.players.forEach(p => {
+      if (!p.ticker) return;
+      const live = LIVE_SNAPSHOT?.players?.[p.ticker];
+      const backend = live?.derived;
+      if (backend?.ragBand) { DERIVED_CACHE[p.ticker] = backend; return; }
+      const baseline = RESEARCHED_PLAYER_BASELINES?.[p.ticker];
+      if (baseline) {
+        const computed = clientRecompute(live || null, baseline);
+        if (computed) DERIVED_CACHE[p.ticker] = computed;
+      }
+    });
+  });
+}
+
+/* Sample news ticker items — structurally accurate, each tagged to its real named source per the approved list */
+/* ============ HARDWIRED HISTORICAL PRICES (Jan-2025 / Jan-2026) ============
+   Source: provided by the tool operator from their verified source, June 2026.
+   These are immutable historical facts — no live API is used or needed.
+   Where no price exists (private company, pre-IPO, or no data provided)
+   the field is null and renders as "No data found."
+   Google DeepMind and Meta AI prices reflect their respective parent-company
+   ADR/shares (Alphabet/GOOGL and Meta Platforms/META), noted as such on display. */
+const HISTORICAL_PRICES = {
+  NVDA:           { jan2025: 128,  jan2026: 188,  note: null },
+  AMD:            { jan2025: 115,  jan2026: 249,  note: null },
+  INTC:           { jan2025: 20,   jan2026: 49,   note: null },
+  QCOM:           { jan2025: 171,  jan2026: 152,  note: null },
+  AVGO:           { jan2025: 202,  jan2026: 333,  note: null },
+  TSM:            { jan2025: 208,  jan2026: 339,  note: null },
+  ASML:           { jan2025: 683,  jan2026: 1339, note: null },
+  AMZN:           { jan2025: 237,  jan2026: 243,  note: null },
+  MSFT:           { jan2025: 415,  jan2026: 433,  note: null },
+  GOOGL:          { jan2025: 204,  jan2026: 338,  note: null },
+  ORCL:           { jan2025: 168,  jan2026: 169,  note: null },
+  CRWV:           { jan2025: null, jan2026: 99,   note: 'IPO\'d March 2025 — no Jan-2025 price.' },
+  SNOW:           { jan2025: 181,  jan2026: 209,  note: null },
+  MDB:            { jan2025: 273,  jan2026: 374,  note: null },
+  CRM:            { jan2025: 343,  jan2026: 214,  note: null },
+  NOW:            { jan2025: 202,  jan2026: 129,  note: null },
+  DEEPMIND_PROXY: { jan2025: 204,  jan2026: 338,  note: 'Division of Alphabet (GOOGL) — price reflects parent.' },
+  META_AI_PROXY:  { jan2025: 647,  jan2026: 738,  note: 'Division of Meta Platforms (META) — price reflects parent.' },
+};
+
+/* ============ PLAYER GROWTH BASELINES (embedded — no Blobs dependency) ============
+   Source: researched June 2026 from primary company guidance sources only.
+   Exactly mirrors RESEARCHED_PLAYER_BASELINES in tier-b-refresh.js.
+   Embedded here so RAG/projection recompute works on every Refresh without
+   requiring the Tier B Blobs store to have been populated first. */
+const RESEARCHED_PLAYER_BASELINES = {
+  NVDA: {
+    growthLow: 0.65, growthHigh: 0.85,
+    source: 'NVIDIA SEC 8-K (Feb 25 2026 & May 20 2026): FY2026 revenue +65% YoY; Q1 FY2027 +85% YoY.',
+  },
+  AMD: {
+    growthLow: 0.32, growthHigh: 0.34,
+    source: 'AMD 10-K FY2025 / 8-K (Feb 3 2026, SEC CIK 0000002488): FY2025 actual revenue $34.6B, +34% YoY vs FY2024 $25.8B. Q1 2026 guidance ~$9.8B implies ~+32% YoY. Growth range derived solely from AMD primary SEC filings.',
+  },
+  AVGO: {
+    growthLow: 0.48, growthHigh: 0.84,
+    source: 'Broadcom Q2 FY2026 earnings (SEC 8-K, Jun 3 2026): revenue +48% YoY; Q3 FY2026 guidance +84% YoY.',
+  },
+  INTC: {
+    growthLow: 0.07, growthHigh: 0.11,
+    source: 'Intel SEC 8-K (Jan 22 2026 & Apr 23 2026): Q1 2026 +7% YoY; Q2 2026 guidance +11% YoY midpoint.',
+  },
+  AMZN: {
+    growthLow: 0.18, growthHigh: 0.20,
+    source: 'Amazon quarterly earnings (10-Q, SEC EDGAR): AWS segment revenue growth 18–20% YoY.',
+  },
+  MSFT: {
+    growthLow: 0.31, growthHigh: 0.40,
+    source: 'Microsoft quarterly earnings (10-Q, SEC EDGAR): Azure segment revenue growth 31–40% YoY.',
+  },
+  GOOGL: {
+    growthLow: 0.28, growthHigh: 0.63,
+    source: 'Alphabet 10-Q (SEC EDGAR) + Q1 2026 8-K (Apr 29 2026): Google Cloud +28-29% YoY prior period; +63% YoY Q1 2026.',
+  },
+  ORCL: {
+    growthLow: 0.40, growthHigh: 0.44,
+    orderBookValue: { amountUSDBillions: 138, label: 'Remaining Performance Obligations (RPO)', asOf: 'Q4 FY2025' },
+    source: 'Oracle management guidance (Oracle Q4 FY2025 earnings, Jun 2025): cloud revenue growth guided "over 40%" for FY2026; Remaining Performance Obligations (RPO) grew 41% to $138B — both figures are Oracle\'s own published guidance. The 44% YoY total cloud revenue figure reflects the most recent quarterly result per Oracle\'s own earnings releases.',
+  },
+  CRWV: {
+    growthLow: 1.34, growthHigh: 1.53,
+    source: 'CoreWeave 10-K FY2025 & Q1 2026 8-K (SEC, May 7 2026): FY2025 revenue $5.131B; FY2026 guidance $12B-$13B; backlog $99.4B.',
+  },
+
+  META_AI_PROXY: {
+    growthLow: 0.22, growthHigh: 0.30,
+    source: 'Meta Platforms SEC 8-K (Jan 28 2026): FY2025 +22% YoY; Q1 2026 guidance implies +30% YoY.',
+  },
+  DEEPMIND_PROXY: {
+    growthLow: 0.22, growthHigh: 0.63,
+    source: 'Alphabet SEC 8-K (Apr 29 2026): Alphabet total +22% YoY; Google Cloud +63% YoY to $20.03B.',
+  },
+  // ---- 7 remaining companies (primary-source-only pass, June 2026) ----
+  //
+  // GOVERNANCE NOTE: Only company-published guidance (earnings releases, IR pages)
+  // is used below — the same class of primary source as SEC EDGAR filings.
+  // fully removed pending governance review and explicit approval of each source.
+  // Companies where no primary-source growth figure was found are explicitly marked
+  // as insufficient-primary-source-data rather than left blank or estimated.
+
+  QCOM: {
+    growthLow: 0.00, growthHigh: 0.14,
+    source: 'Qualcomm SEC 8-K (Nov 5 2025 & Apr 29 2026): FY2025 $44.3B vs FY2024 $38.96B = +14% YoY; near-term caution from memory environment in Q2 FY2026.',
+  },
+
+  ASML: {
+    // ASML's own published 2026 guidance (€36B–€40B total net sales) is a primary
+    // source. However, computing a YoY growth rate requires the prior-year actuals
+    // (2025 revenue €32.67B), which comes from ASML's own published annual results —
+    // a primary source. Both figures are from ASML directly.
+    growthLow: 0.10, growthHigh: 0.225,
+    // No sentiment score: analyst rating breakdowns came exclusively from unapproved
+    source: 'ASML company guidance (ASML Holding N.V. Q4 2025 / FY2025 earnings, Jan 2026): 2026 total net sales guided at €36B–€40B. ASML FY2025 actual revenue: €32.67B (ASML published annual results). Growth range derived purely from these two primary figures: low = €36B/€32.67B - 1 = +10.2%; high = €40B/€32.67B - 1 = +22.5%. No analyst-consensus sources used.',
+  },
+
+  TSM: {
+    growthLow: 0.25, growthHigh: 0.30,
+    // No sentiment score: analyst rating breakdowns came exclusively from unapproved
+    // aggregators — stripped.
+    source: 'TSMC company guidance (TSMC Q4 2025 earnings, Jan 15, 2026): full-year 2026 revenue expected to increase "close to 30%" in USD terms. TSMC Q1 2026 guidance: revenue USD $34.6B–$35.8B with operating margin 54%–56% (same earnings release). Growth range: company guidance midpoint ~30% as high end; 25% as conservative low end reflecting that "close to 30%" is directional rather than a hard floor. No analyst-consensus sources used.',
+  },
+
+  SNOW: {
+    // Snowflake does not publish a multi-year revenue growth rate in its own guidance.
+    // Its FY2026 product revenue guidance ($4.28B, per company IR) and FY2025 actuals
+    // ($3.63B) yield a single-year primary-source growth rate of ~18%, which is used
+    // here as a point estimate rather than a range, since only one year of guidance exists.
+    growthLow: 0.18, growthHigh: 0.18,
+    source: 'Snowflake company guidance (Snowflake Q4 FY2025 earnings, Mar 2025): FY2026 product revenue guidance $4.28B. Snowflake FY2025 actual product revenue $3.63B (same earnings release). Growth rate = $4.28B / $3.63B - 1 = ~18%. Single primary-source point estimate; shown as low=high since no range was published. No analyst-consensus sources used.',
+  },
+
+  MDB: {
+    growthLow: 0.21, growthHigh: 0.22,
+    // No sentiment score: analyst rating breakdowns came exclusively from unapproved
+    // aggregators — stripped.
+    source: 'MongoDB company guidance (MongoDB Q3 FY2026 earnings, Dec 2025): FY2026 revenue guidance raised to $2.434B–$2.439B, representing 21%–22% YoY growth versus FY2025 actual revenue of $2.006B (same earnings release). Growth range low/high = company\'s own published guidance range. No analyst-consensus sources used.',
+  },
+
+  CRM: {
+    growthLow: 0.09, growthHigh: 0.10,
+    // No sentiment score: analyst rating breakdowns came exclusively from unapproved
+    // aggregators — stripped.
+    source: 'Salesforce company guidance (Salesforce Q3 FY2026 earnings, Nov 2025): full-year FY2026 revenue guidance $41.45B–$41.55B, up 9%–10% YoY versus FY2025 actual revenue $37.9B (same earnings release). Growth range = company\'s own published FY2026 guidance range of 9%–10%. No analyst-consensus sources used.',
+  },
+
+  NOW: {
+    growthLow: 0.22, growthHigh: 0.225,
+    // No sentiment score: analyst rating breakdowns came exclusively from unapproved
+    // aggregators — stripped.
+    source: 'ServiceNow company guidance (ServiceNow Q1 2026 earnings, Apr 2026): full-year 2026 GAAP subscription revenue guidance $15,735M–$15,775M, representing 22%–22.5% YoY growth versus 2025 actual subscription revenue of $12,870M (same earnings release). Growth range = company\'s own published guidance range. No analyst-consensus sources used.',
+  },
+};
+
+/* ============ LAYER TAM/TOM (embedded — no Blobs dependency) ============
+   Source: SEMI (fabrication), Stanford HAI 2026 AI Index (all other layers).
+   Embedded here so TAM cards populate on page load without a backend call. */
+const LAYER_TAM_TOM = {
+  'semiconductors-design': {
+    tam: { value: 'Not available from approved sources', label: 'No approved-source data available' },
+    projection: { nineMonth: 'Not available from approved sources', eighteenMonth: 'Not available from approved sources' },
+    source: 'No approved-source TAM available for this layer.',
+  },
+  'cloud-infra': {
+    tam: { value: 'Not available from approved sources', label: 'No approved-source data available' },
+    projection: { nineMonth: 'Not available from approved sources', eighteenMonth: 'Not available from approved sources' },
+    source: 'No approved-source TAM available for this layer.',
+  },
+  'foundation-models': {
+    tam: { value: '$581.7 billion (2025)', label: 'Global corporate AI investment, +130% YoY' },
+    projection: {
+      nineMonth: 'insufficient public consensus data for a forward-looking projection',
+      eighteenMonth: 'insufficient public consensus data for a forward-looking projection',
+    },
+    source: 'Stanford HAI, 2026 AI Index Report (published Apr 2026): global corporate AI investment reached $581.7B in 2025, up 130% YoY. Historical actual shown for context \u2014 not projected forward, since a single YoY figure does not support a reliable forward estimate.',
+  },
+  // ---- Layer 2: Chip Fabrication & Manufacturing Equipment ----
+  // industry trade association that publishes the authoritative semiconductor equipment
+  // market forecast. SEMI press releases are free, openly published, and represent
+  // primary industry data, not a third-party aggregator.
+  'fabrication': {
+    tam: { value: 'Not available from approved sources', label: 'No approved-source data available' },
+    projection: {
+      nineMonth: 'Not available from approved sources',
+      eighteenMonth: 'Not available from approved sources',
+    },
+    source: 'No approved-source TAM available. The primary data source for this segment was found to prohibit redistribution (verified Jun 2026). No approved alternative found among World Bank, IMF, Eurostat, Stanford HAI, or WEF.',
+  },
+
+  // ---- Layer 4: Data Infrastructure & Management ----
+  // Stanford HAI 2026 AI Index is the approved open-access source for this layer.
+  // No standalone "data infrastructure TAM" figure was found in Stanford HAI or
+  // World Bank/IMF/Eurostat without relying on unapproved commercial research firms.
+  // Using the approved Stanford HAI investment figure as the closest proxy.
+  'data-layer': {
+    tam: { value: '$344.7 billion private AI investment (2025), of which data and infrastructure is a substantial share', label: 'Total private AI investment (Stanford HAI, 2026 AI Index)' },
+    projection: {
+      nineMonth: 'Insufficient standalone data-layer TAM available from approved primary sources',
+      eighteenMonth: 'Insufficient standalone data-layer TAM available from approved primary sources',
+    },
+    source: 'Stanford HAI, 2026 AI Index Report (Apr 2026): private AI investment reached $344.7B in 2025, up 127.5% from 2024. A standalone "data infrastructure" sub-market figure was not found in approved sources (Stanford HAI, World Bank, IMF, Eurostat, WEF) without relying on commercial research firms not yet governance-approved. Parent investment figure shown as the best available proxy with appropriate scope caveat.',
+  },
+
+  // ---- Layer 6: MLOps & Model Development Tooling ----
+  'mlops-tooling': {
+    tam: { value: 'Part of $581.7B global corporate AI investment (2025)', label: 'No standalone MLOps TAM available from approved primary sources' },
+    projection: {
+      nineMonth: 'Insufficient standalone MLOps TAM available from approved primary sources',
+      eighteenMonth: 'Insufficient standalone MLOps TAM available from approved primary sources',
+    },
+    source: 'Stanford HAI, 2026 AI Index Report (Apr 2026): global corporate AI investment $581.7B in 2025. A standalone MLOps/model-tooling market size figure was not found in approved primary sources. The Stanford HAI total is shown as context only; it covers the entire AI investment landscape, not MLOps specifically.',
+  },
+
+  // ---- Layer 7: AI Agent & Orchestration Layer ----
+  'agent-orchestration': {
+    tam: { value: 'AI agent deployment in single digits across nearly all business functions as of early 2026', label: 'Adoption rate proxy (Stanford HAI 2026 AI Index)' },
+    projection: {
+      nineMonth: 'Insufficient standalone agent-orchestration TAM from approved primary sources',
+      eighteenMonth: 'Insufficient standalone agent-orchestration TAM from approved primary sources',
+    },
+    source: 'Stanford HAI, 2026 AI Index Report (Apr 2026): AI agent deployment was "in the single digits across nearly all business functions" as of early 2026, despite strong investment interest. A market-size dollar figure for the agent/orchestration tooling layer specifically was not found in approved primary sources without relying on unapproved commercial research firms.',
+  },
+
+  // ---- Layer 8: Application Layer ----
+  'application-layer': {
+    tam: { value: '70% of organizations use GenAI in ≥1 business function (2025–26)', label: 'Enterprise GenAI adoption rate (Stanford HAI 2026 AI Index)' },
+    projection: {
+      nineMonth: 'Adoption expected to continue rising; U.S. consumer AI surplus $172B annually (early 2026, up from $112B a year earlier)',
+      eighteenMonth: 'Insufficient forward application-layer TAM from approved primary sources beyond directional adoption trends',
+    },
+    source: 'Stanford HAI, 2026 AI Index Report (Apr 2026): Generative AI used in at least one business function at 70% of organizations; estimated U.S. consumer surplus from AI tools reached $172B annually by early 2026, up from $112B a year earlier, with median value per user tripling over the same period. Dollar TAM figure for the enterprise AI applications market specifically was not found in approved primary sources without relying on unapproved commercial research firms.',
+  },
+
+  // ---- Layer 9: AI Governance, Safety & Compliance Tooling ----
+  'governance-safety': {
+    tam: { value: 'Nascent market; governance frameworks lagging AI capability development', label: 'Stanford HAI 2026 AI Index qualitative assessment' },
+    projection: {
+      nineMonth: 'EU AI Act transparency obligations applicable from 2 August 2026 expected to drive compliance tooling demand',
+      eighteenMonth: 'Insufficient standalone governance tooling TAM from approved primary sources',
+    },
+    source: 'Stanford HAI, 2026 AI Index Report (Apr 2026): "the frameworks needed to govern, evaluate, and understand this technology are falling behind" AI capability development — qualitative assessment confirming nascent state of this market segment. EU AI Act transparency obligations apply from 2 August 2026 (Regulation (EU) 2024/1689, published in the EU Official Journal — public law). No dollar TAM figure for this specific sub-market found in approved primary sources.',
+  },
+};
+
+
+/* ============ CLIENT-SIDE RECOMPUTE (mirrors refresh.js recompute exactly) ============
+   Runs when backend-computed derived data is not yet available from the Blobs store.
+   Uses the same weighted formula as the backend — any formula change must be
+   applied to both locations. */
+function clientRecompute(player, baseline) {
+  if (!baseline || baseline.insufficientPrimarySourceData) return null;
+  const { growthLow, growthHigh, sentimentScore } = baseline;
+  const priceTrendScore = player?.priceChangePct != null
+    ? Math.max(0, Math.min(100, 50 + player.priceChangePct * 2)) : 50;
+  const fundamentalsTrendScore = 50;
+  const newsSignalScore = 50;
+  const effectiveSentiment = sentimentScore ?? 50;
+  const ragScore =
+    priceTrendScore * 0.35 + fundamentalsTrendScore * 0.30 +
+    effectiveSentiment * 0.20 + newsSignalScore * 0.15;
+  const ragBand = ragScore >= 65 ? 'green' : ragScore >= 40 ? 'amber' : 'red';
+  const base = player?.marketCapM;
+  const projection = base != null && growthLow != null && growthHigh != null ? {
+    nineMonth: { low: base * (1 + growthLow * 0.75), high: base * (1 + growthHigh * 0.75) },
+    eighteenMonth: { low: base * (1 + growthLow * 1.5), high: base * (1 + growthHigh * 1.5) },
+  } : null;
+  // P/E = Market Cap / Net Income (equivalent to Price/EPS, no shares tag needed)
+  const netIncome = player?.edgar?.netIncome?.value;
+  const marketCapM = player?.marketCapM;
+  let peTTM = null;
+  if (netIncome != null && netIncome > 0 && marketCapM != null && marketCapM > 0) {
+    peTTM = parseFloat(((marketCapM * 1e6) / netIncome).toFixed(1));
+  }
+  return { peTTM, ragScore: Math.round(ragScore), ragBand, projection };
+}
+
+const SAMPLE_NEWS = [
+  {src:'NIST', text:'Awaiting live refresh — connects to NIST AI publications feed on deploy.'},
+  {src:'Federal Register', text:'Awaiting live refresh — connects to Federal Register API on deploy.'},
+  {src:'TechCrunch', text:'Awaiting live refresh — connects to TechCrunch RSS (per published terms) on deploy.'},
+  {src:'Federal Reserve', text:'Awaiting live refresh — connects to Federal Reserve RSS on deploy.'},
+  {src:'WHO', text:'Awaiting live refresh — connects to WHO RSS on deploy.'}
+];
+
+const STACK_DATA_INLINE = {"meta": {"dataMode": "STRUCTURAL_SAMPLE", "note": "This dataset defines the structure every layer/player record uses. Numeric financial fields are intentionally left as 'pending live refresh' rather than populated with placeholder numbers, to avoid presenting any unverified figure as fact. Once deployed and connected to Finnhub, SEC EDGAR, World Bank, IMF, Eurostat, Stanford HAI, and WEF per the architecture, the Netlify Functions in /netlify/functions populate these fields live.", "tierALastRefreshed": null, "tierBLastResearched": null}, "layers": [{"id": "semiconductors-design", "order": 1, "name": "Semiconductors & AI Chip Design", "hoverDescription": ["Companies that design the processors (GPUs, AI accelerators, custom silicon) that power AI training and inference.", "Distinct from manufacturing \u2014 these firms design chips but typically don't fabricate them."], "overview": "Designs the compute primitives \u2014 GPUs, TPUs, NPUs, and custom AI accelerators \u2014 that every other layer of the stack ultimately runs on.", "subComponents": [{"id": "gpu-accelerators", "name": "GPU & AI Accelerators", "description": "General-purpose and AI-specific parallel processors used for training and inference."}, {"id": "custom-silicon", "name": "Custom Silicon (ASIC/NPU)", "description": "Purpose-built chips designed for a specific AI workload or company."}, {"id": "interconnect", "name": "Chip-to-Chip Interconnect", "description": "High-speed links (e.g. NVLink-class fabrics) that let many chips act as one cluster."}], "players": [{"name": "NVIDIA", "ticker": "NVDA", "keyProducts": "GPUs (H100/Blackwell), CUDA platform, DGX systems"}, {"name": "AMD", "ticker": "AMD", "keyProducts": "Instinct AI accelerators, EPYC server CPUs, Ryzen CPUs"}, {"name": "Intel", "ticker": "INTC", "keyProducts": "Xeon server CPUs, Gaudi AI accelerators, Core CPUs"}, {"name": "Qualcomm", "ticker": "QCOM", "keyProducts": "Snapdragon mobile/AI chips, Cloud AI accelerators"}, {"name": "Broadcom", "ticker": "AVGO", "keyProducts": "Custom AI ASICs (XPUs), networking silicon, VMware software"}]}, {"id": "fabrication", "order": 2, "name": "Chip Fabrication & Manufacturing Equipment", "hoverDescription": ["Foundries that physically manufacture chips, plus makers of the equipment used to fabricate them.", "A separate market from chip design, with different economics, players, and capital cycles."], "overview": "Turns chip designs into physical silicon \u2014 the foundries and the lithography/equipment makers that supply them.", "subComponents": [{"id": "foundries", "name": "Advanced-Node Foundries", "description": "Contract manufacturers that fabricate chips designed by other companies."}, {"id": "lithography", "name": "Lithography & Fab Equipment", "description": "The machinery foundries depend on to print circuits at advanced nodes."}, {"id": "packaging", "name": "Advanced Packaging", "description": "Techniques (e.g. chiplet packaging) that combine multiple dies into one package."}], "players": [{"name": "TSMC", "ticker": "TSM", "keyProducts": "N2/N3/N5 process nodes, CoWoS advanced packaging, TSMC Foundry Services"}, {"name": "Samsung Foundry", "ticker": null}, {"name": "ASML", "ticker": "ASML", "keyProducts": "Extreme ultraviolet (EUV) lithography systems"}]}, {"id": "cloud-infra", "order": 3, "name": "Cloud & AI Infrastructure", "hoverDescription": ["Hyperscale compute providers and data-center operators that host AI training/inference workloads.", "Includes traditional hyperscalers and newer AI-specific compute providers."], "overview": "Provides the data-center scale compute, storage, and networking that AI workloads actually run on, rented by the hour or committed contract.", "subComponents": [{"id": "hyperscale-cloud", "name": "Hyperscale Cloud Platforms", "description": "Full-service cloud providers offering AI compute alongside their broader cloud catalog."}, {"id": "gpu-cloud", "name": "Specialist GPU Cloud", "description": "Providers focused specifically on renting AI accelerator capacity."}, {"id": "datacenter-ops", "name": "Data Center Operations & Power", "description": "Physical facility build-out, cooling, and energy supply for AI compute clusters."}], "players": [{"name": "Amazon (AWS)", "ticker": "AMZN", "keyProducts": "EC2 compute, Trainium/Inferentia chips, Bedrock"}, {"name": "Microsoft (Azure)", "ticker": "MSFT", "keyProducts": "Azure cloud platform, Azure AI services"}, {"name": "Google Cloud", "ticker": "GOOGL", "keyProducts": "Google Cloud Platform, Vertex AI, TPU silicon"}, {"name": "Oracle Cloud", "ticker": "ORCL", "keyProducts": "Oracle Cloud Infrastructure (OCI), Cloud@Customer"}, {"name": "CoreWeave", "ticker": "CRWV", "keyProducts": "GPU cloud infrastructure, AI Object Storage"}]}, {"id": "data-layer", "order": 4, "name": "Data Infrastructure & Management", "hoverDescription": ["Platforms for storing, processing, and retrieving the data that trains and feeds AI systems, including vector databases.", "Underpins both model training and real-time AI application performance."], "overview": "Stores, organizes, and serves the data \u2014 structured and unstructured \u2014 that AI models are trained and grounded on.", "subComponents": [{"id": "data-warehousing", "name": "Data Warehousing & Lakes", "description": "Large-scale storage and querying of structured and semi-structured data."}, {"id": "vector-db", "name": "Vector & Embedding Databases", "description": "Specialized storage for the numerical representations AI models use for retrieval."}, {"id": "data-labeling", "name": "Data Labeling & Curation", "description": "Preparing and annotating data for model training."}], "players": [{"name": "Snowflake", "ticker": "SNOW", "keyProducts": "Cloud data warehousing, Snowflake Cortex AI"}, {"name": "Databricks", "ticker": null}, {"name": "MongoDB", "ticker": "MDB", "keyProducts": "MongoDB Atlas, vector search"}]}, {"id": "foundation-models", "order": 5, "name": "Foundation Models / Frontier AI Labs", "hoverDescription": ["Organizations that build and release large-scale AI models (language, multimodal, etc.).", "The \u201cintelligence layer\u201d \u2014 the core models other layers build on top of."], "overview": "Trains and releases the large-scale models \u2014 language, vision, multimodal \u2014 that act as the reasoning core for the rest of the stack.", "subComponents": [{"id": "llms", "name": "Large Language Models", "description": "General-purpose text and reasoning models."}, {"id": "multimodal", "name": "Multimodal Models", "description": "Models spanning text, image, audio, and video."}, {"id": "open-weight", "name": "Open-Weight Models", "description": "Models released with publicly downloadable weights."}], "players": [{"name": "OpenAI", "ticker": null}, {"name": "Anthropic", "ticker": null}, {"name": "Google DeepMind", "ticker": "DEEPMIND_PROXY", "keyProducts": "Gemini AI models, AlphaFold, Veo video generation, AI research"}, {"name": "Meta AI", "ticker": "META_AI_PROXY", "keyProducts": "Llama open-weight models, Meta AI assistant, PyTorch framework"}, {"name": "xAI", "ticker": null}, {"name": "Mistral AI", "ticker": null}]}, {"id": "mlops-tooling", "order": 6, "name": "MLOps & Model Development Tooling", "hoverDescription": ["Platforms for training, fine-tuning, evaluating, and monitoring AI models through their lifecycle.", "Bridges raw models and production-ready deployment."], "overview": "Provides the tooling teams use to fine-tune, evaluate, version, and monitor models from experiment to production.", "subComponents": [{"id": "model-hubs", "name": "Model Hubs & Registries", "description": "Repositories for sharing and versioning pretrained and fine-tuned models."}, {"id": "experiment-tracking", "name": "Experiment Tracking", "description": "Tools for logging and comparing training runs."}, {"id": "eval-monitoring", "name": "Evaluation & Monitoring", "description": "Tools for testing model quality and tracking production performance."}], "players": [{"name": "Hugging Face", "ticker": null}, {"name": "Weights & Biases", "ticker": null}, {"name": "Scale AI", "ticker": null}]}, {"id": "agent-orchestration", "order": 7, "name": "AI Agent & Orchestration Layer", "hoverDescription": ["Frameworks that connect models to external tools, data, and multi-step workflows (agents, RAG pipelines).", "A distinct, fast-growing segment separate from the underlying foundation models themselves."], "overview": "Connects raw models to tools, memory, and external data so they can carry out multi-step tasks rather than answer single prompts.", "subComponents": [{"id": "agent-frameworks", "name": "Agent Frameworks", "description": "Libraries for building multi-step, tool-using AI agents."}, {"id": "rag-pipelines", "name": "RAG Pipelines", "description": "Systems that retrieve external knowledge to ground model responses."}, {"id": "orchestration-middleware", "name": "Orchestration Middleware", "description": "Infrastructure for chaining prompts, tools, and models into workflows."}], "players": [{"name": "LangChain", "ticker": null}, {"name": "LlamaIndex", "ticker": null}]}, {"id": "application-layer", "order": 8, "name": "Application Layer", "hoverDescription": ["Enterprise and consumer-facing products that embed AI to deliver a specific end-user function.", "Where AI capability is ultimately monetized as a finished product or service."], "overview": "The finished products \u2014 enterprise and consumer \u2014 where AI capability is packaged into something a person actually uses.", "subComponents": [{"id": "enterprise-ai", "name": "Enterprise AI Applications", "description": "AI embedded into business software (CRM, ITSM, productivity suites)."}, {"id": "consumer-ai", "name": "Consumer AI Applications", "description": "AI-first products aimed directly at individual end users."}, {"id": "vertical-ai", "name": "Vertical AI (industry-specific)", "description": "AI applications built for a specific industry, e.g. legal, healthcare, finance."}], "players": [{"name": "Microsoft (Copilot)", "ticker": "MSFT", "keyProducts": "Microsoft 365 Copilot, GitHub Copilot"}, {"name": "Salesforce (Einstein/Agentforce)", "ticker": "CRM", "keyProducts": "Agentforce, Einstein AI, Salesforce CRM"}, {"name": "ServiceNow", "ticker": "NOW", "keyProducts": "Now Platform, AI Agents for ITSM/HR/CSM"}]}, {"id": "governance-safety", "order": 9, "name": "AI Governance, Safety & Compliance Tooling", "hoverDescription": ["Vendors building model evaluation, red-teaming, observability, and regulatory-compliance software for AI systems.", "A market segment in its own right, distinct from policy/regulatory bodies themselves."], "overview": "Builds the software companies use to test, monitor, and document AI systems for safety and regulatory compliance \u2014 a vendor market, not the policymakers themselves.", "subComponents": [{"id": "model-evaluation", "name": "Model Evaluation & Red-Teaming", "description": "Tools for systematically testing model behavior and vulnerabilities."}, {"id": "ai-observability", "name": "AI Observability", "description": "Monitoring AI systems in production for drift, errors, and misuse."}, {"id": "compliance-software", "name": "Regulatory Compliance Software", "description": "Tools for documenting and demonstrating compliance with AI regulation."}], "players": [{"name": "Credo AI", "ticker": null}, {"name": "Holistic AI", "ticker": null}]}]};
+
+
+
+
+async function loadData(){
+  STACK_DATA = STACK_DATA_INLINE;
+}
+
+function fmtTimestamp(){
+  const now = new Date();
+  const ist = now.toLocaleString('en-IN', {timeZone:'Asia/Kolkata', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false});
+  const et = now.toLocaleString('en-US', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit', hour12:false});
+  return {ist, et, dateLabel: now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+}
+
+function renderTimestamp(){
+  const row = document.getElementById('timestampRow');
+  if(!TIER_A_STATE.lastRefreshed){
+    row.innerHTML = `Data refreshed as on <b>— (not yet refreshed in this session)</b>. Press Refresh to fetch live data. Underlying research baseline last compiled: <b>pending live deployment</b>.`;
+    return;
+  }
+  const t = TIER_A_STATE.lastRefreshed;
+  row.innerHTML = `Data refreshed as on <b>${t.dateLabel}</b> at <b>${t.ist} IST / ${t.et} ET</b> — live market figures and computed indicators reflect this refresh; underlying research baseline last compiled <b>${TIER_B_STATE.lastResearched || 'pending live deployment'}</b>.`;
+}
+
+function renderTicker(){
+  const inner = document.getElementById('tickerInner');
+  const TICKER_FILTER = [/\bai\b/i,/artificial intelligence/i,/machine learning/i,
+    /\bgpu\b/i,/semiconductor/i,/\bchip(s|maker)?\b/i,/language model/i,
+    /generative/i,/digital polic/i,/technology/i,/\btech\b/i,/robotics?/i,
+    /automation/i,/ai regulat/i,/ai governance/i,/ai act/i,/cybersecurity/i,
+    /data center/i,/cloud computing/i,/algorithm/i,
+  ];
+  const raw = LIVE_SNAPSHOT?.news || [];
+  const filtered = raw.filter(n => n.title && TICKER_FILTER.some(re => re.test(n.title)));
+  const liveItems = filtered.length > 0 ? filtered : raw.length > 0 ? raw : null;
+  const items = liveItems
+    ? liveItems.map(n => `<span class="ticker-item"><span class="src">${n.source}</span><a href="${n.link||'#'}" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">${n.title}</a></span>`).join('')
+    : SAMPLE_NEWS.map(n => `<span class="ticker-item"><span class="src">${n.src}</span>${n.text}</span>`).join('');
+  const doubled = items + items;
+  inner.innerHTML = doubled;
+}
+
+/* ============ STACK RENDER ============ */
+function renderStack(){
+  const wrap = document.getElementById('stackScroll');
+  wrap.innerHTML = '';
+  STACK_DATA.layers.forEach((layer, idx) => {
+    const node = document.createElement('div');
+    node.className = 'layer-node';
+    node.innerHTML = `
+      <div class="layer-card" tabindex="0" data-layer="${layer.id}">
+        <div class="layer-num">LAYER ${String(layer.order).padStart(2,'0')}</div>
+        <div class="layer-name">${layer.name}</div>
+      </div>
+      ${idx < STACK_DATA.layers.length-1 ? `<div class="flow-arrow"><svg viewBox="0 0 64 24"><path class="flow-line" d="M0,12 H64"/><path class="flow-pulse" d="M0,12 H64"/></svg></div>` : ''}
+    `;
+    wrap.appendChild(node);
+  });
+  wrap.querySelectorAll('.layer-card').forEach(card=>{
+    card.addEventListener('click', ()=> openLayer(card.dataset.layer));
+    card.addEventListener('keydown', e=>{ if(e.key==='Enter') openLayer(card.dataset.layer); });
+  });
+}
+
+/* ============ LAYER DETAIL ============ */
+function openLayer(layerId){
+  CURRENT_OPEN_LAYER = layerId;
+  const layer = STACK_DATA.layers.find(l=>l.id===layerId);
+  document.getElementById('stackView').classList.add('compact');
+  document.querySelectorAll('.layer-card').forEach(c=> c.classList.toggle('selected', c.dataset.layer===layerId));
+  const panel = document.getElementById('detailPanel');
+  panel.classList.add('active');
+
+  // Per-layer keyword sets for filtering live news items from LIVE_SNAPSHOT.news.
+  // Each entry covers the layer's known company names, technology terms, and
+  // policy topics so items from TechCrunch/NIST/Federal Register/EU Commission
+  // are attributed to the right layer.
+  // Layer-specific news filter: each layer has primary + fallback keyword sets
+  // tuned to what TechCrunch/NIST/Federal Register/Federal Reserve/WHO actually publish.
+  // Falls back through: layer-specific → broad AI terms → any stored item.
+  const LAYER_NEWS_FILTER = {
+    'semiconductors-design': [/nvidia/i,/\bamd\b/i,/\bintel\b/i,/qualcomm/i,/broadcom/i,/\bgpu/i,/chip design/i,/ai chip/i,/accelerator/i,/silicon/i,/semiconductor(?! equip)/i,/\bnpu\b/i,/\btsmc\b/i],
+    'fabrication':           [/tsmc/i,/\bfoundry/i,/asml/i,/lithography/i,/euv/i,/wafer/i,/chip.{0,8}(fab|manufactur)/i,/samsung.{0,10}chip/i,/\bfab\b/i,/node.{0,6}nm/i],
+    'cloud-infra':           [/\baws\b/i,/amazon.{0,10}web/i,/\bazure\b/i,/google cloud/i,/oracle cloud/i,/coreweave/i,/hyperscal/i,/data cent/i,/cloud (computi|infrastr|capex)/i,/\bec2\b/i],
+    'data-layer':            [/snowflake/i,/databricks/i,/mongodb/i,/vector (database|search|embed)/i,/data.{0,8}(platform|lake|warehouse|infrastr)/i,/\brag\b.*data/i,/data management/i,/\bpinecone/i],
+    'foundation-models':     [/openai/i,/anthropic/i,/deepmind/i,/\bgpt.?[0-9]/i,/\bclaude\b/i,/\bgemini\b/i,/\bgrok\b/i,/mistral/i,/llama.{0,5}[0-9]/i,/large language model/i,/foundation model/i,/frontier (ai|model)/i,/\bllm\b/i,/language model/i],
+    'mlops-tooling':         [/hugging face/i,/weights.{0,5}bias/i,/\bmlops\b/i,/model (training|fine.tun|evaluat|deploy|monitor)/i,/\bwandb\b/i,/ai training/i,/model performance/i],
+    'agent-orchestration':   [/ai agent/i,/agentic/i,/langchain/i,/llamaindex/i,/\bcopilot\b.*agent/i,/\brag\b.*pipeline/i,/multi.step.*ai/i,/autonomous.*ai/i,/ai.*workflow/i,/ai.*orchestr/i],
+    'application-layer':     [/salesforce/i,/servicenow/i,/microsoft.*copilot/i,/\bcopilot\b/i,/agentforce/i,/enterprise.*ai/i,/ai.*software/i,/generative.*app/i,/ai.{0,10}product/i,/ai.*business/i],
+    'governance-safety':     [/ai act/i,/ai safety/i,/ai governance/i,/ai regulat/i,/ai compli/i,/ai risk/i,/responsible ai/i,/trustworthy ai/i,/ai oversight/i,/ai polic/i,/nist.*ai/i,/executive order.*ai/i,/ai standard/i],
+  };
+  const BROAD_AI = [/\bai\b/i,/artificial intelligence/i,/machine learning/i,/\bgpu\b/i,/semiconductor/i,/\bchip/i,/language model/i,/generative/i,/automation/i,/digital policy/i];
+
+  const allNews = LIVE_SNAPSHOT?.news || [];
+  const layerKw = LAYER_NEWS_FILTER[layer.id] || [];
+  const layerMatches = allNews.filter(n => n.title && layerKw.some(re => re.test(n.title)));
+  const broadMatches = allNews.filter(n => n.title && BROAD_AI.some(re => re.test(n.title)));
+  const displayNews = (layerMatches.length >= 1 ? layerMatches : broadMatches.length >= 1 ? broadMatches : allNews).slice(0, 4);
+
+  const mkNewsCard = n =>`
+    <div class="dev-card">
+      <span class="tag">${n.source}</span>
+      <p><a href="${n.link||'#'}" target="_blank" rel="noopener"
+         style="color:var(--text); text-decoration:none;"
+         onmouseover="this.style.color='var(--cyan)'"
+         onmouseout="this.style.color='var(--text)'">
+         ${n.title||'(no title)'}</a></p>
+    </div>`;
+
+  const devItems = displayNews.length > 0
+    ? displayNews.map(mkNewsCard).join('')
+    : `<div class="dev-card" style="border-left-color:var(--muted)">
+        <span class="tag" style="color:var(--muted)">No live items yet</span>
+        <p style="color:var(--muted)">Click <b style="color:var(--text)">Refresh</b>
+        to fetch the latest items from TechCrunch, NIST, Federal Register,
+        Federal Reserve and WHO.</p>
+       </div>`;
+
+  const subFlow = layer.subComponents.map(sc=>`
+    <div class="subcomp-chip" data-sub="${sc.id}" data-layer="${layer.id}" tabindex="0">
+      <h4>${sc.name}</h4><p>${sc.description}</p>
+    </div>
+  `).join('');
+
+  // Use live Tier B data if available; fall back to the embedded static data
+  const layerB = LIVE_TIER_B_LAYERS?.[layer.id] || LAYER_TAM_TOM?.[layer.id];
+
+  // For layers where standalone TAM is unavailable, compute aggregate tracked-company
+  // revenue from EDGAR (already fetched in Tier A) as a clearly-labeled proxy.
+  // This is compliant: figures derive from SEC EDGAR primary filings, already approved.
+  const edgarAggTickers = {
+    'semiconductors-design': ['NVDA','AMD','INTC','QCOM','AVGO'],
+    'fabrication': ['TSM','ASML'],
+    'cloud-infra': ['AMZN','MSFT','GOOGL','ORCL','CRWV'],
+    'data-layer': ['SNOW','MDB'],
+    'application-layer': ['CRM','NOW'],
+  }[layer.id];
+
+  let edgarAggNote = null;
+  if (edgarAggTickers && LIVE_SNAPSHOT?.players) {
+    let totalM = 0; let count = 0;
+    edgarAggTickers.forEach(t => {
+      const rev = LIVE_SNAPSHOT.players[t]?.edgar?.revenue?.value;
+      if (rev != null) { totalM += rev / 1e6; count++; }
+    });
+    if (count > 0) {
+      edgarAggNote = {
+        value: `$${totalM.toLocaleString(undefined,{maximumFractionDigits:0})}M combined (${count} of ${edgarAggTickers.length} tracked companies)`,
+        label: `Combined annual revenues of tracked public companies in this layer — sourced from SEC EDGAR filings (not a total market estimate)`,
+      };
+    }
+  }
+
+  const tamCard = (label, content, amber) => {
+    if (!content) return `<div class="tam-card"><div class="label">${label}</div><div class="value pending">insufficient public consensus data</div></div>`;
+    const isNA = content.toString().startsWith('Not available');
+    const style = isNA ? 'font-size:.85rem; color:var(--amber);' : 'font-size:1rem;';
+    return `<div class="tam-card"><div class="label">${label}</div><div class="value" style="${style}">${content}</div></div>`;
+  };
+
+  // Build TAM grid: use Tier B data if present, fallback to EDGAR aggregate proxy
+  let tamGridHtml, tamSourceNote;
+  if (layerB) {
+    const tamDisplay = layerB.tam.value.startsWith('Not available') && edgarAggNote
+      ? `<b style="color:var(--text)">Best available proxy (EDGAR aggregate):</b> ${edgarAggNote.value}<br><span style="font-size:.75rem; color:var(--muted)">${edgarAggNote.label}</span>`
+      : `${layerB.tam.value}<div style="font-size:.7rem; color:var(--muted); margin-top:6px; font-family:var(--font-body);">${layerB.tam.label}</div>`;
+    tamGridHtml =
+      tamCard('TAM / Market Proxy', tamDisplay) +
+      tamCard('TOM', `Layer-specific TOM not separately broken out in cited sources — see scope note below`) +
+      tamCard('9-Month Projection', layerB.projection.nineMonth) +
+      tamCard('18-Month Projection', layerB.projection.eighteenMonth);
+    tamSourceNote = `<p style="font-size:11px; color:var(--muted); margin-top:-30px; margin-bottom:30px;">Source: ${layerB.source}${edgarAggNote && layerB.tam.value.startsWith('Not available') ? ' | EDGAR aggregate: SEC EDGAR filings of tracked companies (approved primary source, CC0-equivalent public records).' : ''}</p>`;
+  } else if (edgarAggNote) {
+    tamGridHtml =
+      tamCard('TAM / Market Proxy', `<b style="color:var(--text)">EDGAR aggregate:</b> ${edgarAggNote.value}<br><span style="font-size:.75rem; color:var(--muted)">${edgarAggNote.label}</span>`) +
+      tamCard('TOM', `Not separately available from approved sources`) +
+      tamCard('9-Month Projection', `Not available from approved sources`) +
+      tamCard('18-Month Projection', `Not available from approved sources`);
+    tamSourceNote = `<p style="font-size:11px; color:var(--muted); margin-top:-30px; margin-bottom:30px;">Source: SEC EDGAR filings of tracked public companies (approved primary source). Combined revenue shown as a proxy for layer scale — not a third-party market estimate.</p>`;
+  } else {
+    tamGridHtml = tamCard('TAM','') + tamCard('TOM','') + tamCard('9-Month Projection','') + tamCard('18-Month Projection','');
+    tamSourceNote = `<p style="font-size:11px; color:var(--muted); margin-top:-30px; margin-bottom:30px;">No approved-source TAM/TOM figure available for this layer in the current research pass.</p>`;
+  }
+
+  // Industry-average P/E: computed live from whichever tracked peers in this layer
+  // currently have a P/E value — a real, derived figure, not a separately sourced one.
+  const peValues = layer.players
+    .map(p => {
+      const live = p.ticker && LIVE_SNAPSHOT?.players?.[p.ticker];
+      let d = live?.derived;
+      if (!d && p.ticker && RESEARCHED_PLAYER_BASELINES?.[p.ticker]) d = clientRecompute(live, RESEARCHED_PLAYER_BASELINES[p.ticker]);
+      return d?.peTTM;
+    })
+    .filter(v => v != null && !isNaN(v));
+  const industryAvgPE = peValues.length ? (peValues.reduce((a,b)=>a+b,0) / peValues.length) : null;
+
+  const playerRows = layer.players.map(p=>{
+    const live = p.ticker && LIVE_SNAPSHOT?.players?.[p.ticker];
+    const fh = live;
+    const edgar = live?.edgar;
+    // Use backend-computed derived data if available; otherwise recompute client-side
+    // using the embedded RESEARCHED_PLAYER_BASELINES — so RAG/projections show
+    // without requiring a Tier B Blobs store to have been populated first.
+    // Use pre-built cache (rebuilt on every Refresh + on init).
+    // Cache guarantees RAG shows even before first Refresh on page load.
+    let derived = DERIVED_CACHE[p.ticker] || null;
+    const obv = live?.orderBookValue;
+
+    const cell = (val, suffix='') => val!=null ? `<td>${val}${suffix}</td>` : `<td class="pending">${p.ticker ? 'pending' : 'not yet tracked'}</td>`;
+    const moneyCell = (factOrNull) => factOrNull?.value!=null ? `<td>${Math.round(factOrNull.value/1e6).toLocaleString()} <span style="color:var(--muted)">(as of ${factOrNull.asOf})</span></td>` : `<td class="pending">${p.ticker ? 'pending' : 'not yet tracked'}</td>`;
+    const ragCell = () => {
+      // Guard: derived may have peTTM but no ragBand/ragScore (baseline exists but
+      // insufficientPrimarySourceData is true). Check ragBand specifically.
+      if(!derived || !derived.ragBand) {
+        const insuff = LIVE_SNAPSHOT?.players?.[p.ticker]?.insufficientPrimarySourceData
+                    || RESEARCHED_PLAYER_BASELINES?.[p.ticker]?.insufficientPrimarySourceData;
+        const msg = insuff ? 'Insufficient primary-source data' : 'pending';
+        return `<td><span class="rag-badge rag-pending"></span>${msg}</td>`;
+      }
+      return `<td><span class="rag-badge rag-${derived.ragBand}"></span>${derived.ragScore}</td>`;
+    };
+    const obvCell = obv
+      ? `<td>$${obv.amountUSDBillions}B <span style="color:var(--muted)">(${obv.label}, ${obv.asOf})</span></td>`
+      : `<td class="pending">${p.ticker ? 'not disclosed in public domain' : 'not yet tracked'}</td>`;
+
+    const hist = HISTORICAL_PRICES[p.ticker] || null;
+    const histCell = (val, note) => {
+      if (val != null) {
+        const noteStr = note ? ` <span style="font-size:10px; color:var(--amber);" title="${note}">⚠</span>` : '';
+        return `<td>$${val.toFixed ? val.toFixed(2) : val}${noteStr}</td>`;
+      }
+      return `<td class="pending">No data found</td>`;
+    };
+
+    return `
+    <tr>
+      <td>${p.name}</td>
+      ${cell(fh?.marketCapM!=null ? fh.marketCapM.toLocaleString() : null)}
+      ${moneyCell(edgar?.revenue)}
+      ${moneyCell(edgar?.netIncome)}
+      ${(()=>{ const ni=edgar?.netIncome?.value; const mc=fh?.marketCapM; return (ni!=null&&ni>0&&mc!=null&&mc>0) ? `<td>${((mc*1e6)/ni).toFixed(1)}</td>` : `<td class="pending">pending</td>`; })()}
+      ${cell(industryAvgPE!=null ? industryAvgPE.toFixed(1)+' (live layer avg.)' : null)}
+      ${obvCell}
+      ${moneyCell(edgar?.totalDebt)}
+      ${moneyCell(edgar?.operatingCashFlow)}
+      <td>${p.keyProducts || '<span class="pending">not yet catalogued</span>'}</td>
+      ${(()=>{
+        const bl = RESEARCHED_PLAYER_BASELINES?.[p.ticker];
+        if (!bl || bl.insufficientPrimarySourceData || bl.growthLow == null)
+          return `<td class="pending">pending</td>`;
+        const lo = Math.round(bl.growthLow * 50);
+        const hi = Math.round(bl.growthHigh * 50);
+        const txt = lo === hi ? `+${lo}%` : `+${lo}%–+${hi}%`;
+        return `<td style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">${txt}</td>`;
+      })()}
+      ${histCell(hist?.jan2025, hist?.note)}
+      ${histCell(hist?.jan2026, hist?.note)}
+      ${cell(fh?.price!=null ? '$'+fh.price.toFixed(2) : null)}
+      ${ragCell()}
+    </tr>
+  `;}).join('');
+
+  panel.innerHTML = `
+    <button class="back-link" id="backToStack">&larr; Back to full stack</button>
+    <div class="section-label">Latest developments — industry &amp; policy</div>
+    <div class="dev-banner">${devItems}</div>
+
+    <h2 class="layer-title">${layer.name}</h2>
+    <div class="layer-desc-box">
+      <ul>${layer.hoverDescription.map(d=>`<li>${d}</li>`).join('')}</ul>
+    </div>
+    <p class="layer-overview">${layer.overview}</p>
+
+    <span class="section-label">Sub-components</span>
+    <div class="subcomp-flow">${subFlow}</div>
+
+    <span class="section-label">Market size &amp; projections</span>
+    <div class="tam-grid">
+      ${tamGridHtml}
+    </div>
+    ${tamSourceNote}
+
+    <span class="section-label">Key global players</span>
+    <div class="players-table-wrap">
+      <table class="players">
+        <thead><tr>
+          <th>Player</th><th>Mkt Cap (US$M)</th><th>Revenue (US$M)</th><th>Profit (US$M)</th>
+          <th>P/E</th><th>P/E Benchmark</th><th>Order Book Value</th><th>Debt (US$M)</th>
+          <th>Free Cash Flow (US$M)</th><th>Key Products</th><th>6-Mo Projection</th><th>Price Jan-2025</th>
+          <th>Price Jan-2026</th><th>Price (Current Wk)</th><th>RAG (9-mo prospects)</th>
+        </tr></thead>
+        <tbody>${playerRows}</tbody>
+      </table>
+    </div>
+    <p style="font-size:11.5px; color:var(--muted); margin-top:10px;">All fields above populate live from Finnhub, SEC EDGAR, and the research-baseline sources once deployed — see "How data is refreshed" on the landing page. Order book value is shown as "not yet checked" rather than estimated, and will read "not disclosed in public domain" where no public source discloses it.</p>
+  `;
+
+  document.getElementById('backToStack').addEventListener('click', closeLayer);
+  panel.querySelectorAll('.subcomp-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=> openSubDrilldown(chip.dataset.layer, chip.dataset.sub));
+    chip.addEventListener('keydown', e=>{ if(e.key==='Enter') openSubDrilldown(chip.dataset.layer, chip.dataset.sub); });
+  });
+
+  panel.scrollIntoView({behavior:'smooth'});
+}
+
+function closeLayer(){
+  CURRENT_OPEN_LAYER = null;
+  document.getElementById('detailPanel').classList.remove('active');
+  document.getElementById('detailPanel').innerHTML='';
+  document.getElementById('stackView').classList.remove('compact');
+  document.querySelectorAll('.layer-card').forEach(c=> c.classList.remove('selected'));
+  document.getElementById('stackView').scrollIntoView({behavior:'smooth'});
+}
+
+/* ============ LEVEL 2 DRILLDOWN ============ */
+function openSubDrilldown(layerId, subId){
+  const layer = STACK_DATA.layers.find(l=>l.id===layerId);
+  const sub = layer.subComponents.find(s=>s.id===subId);
+  const layerB = LIVE_TIER_B_LAYERS?.[layerId] || LAYER_TAM_TOM?.[layerId];
+
+  // Relevant players: all players in the parent layer (sub-component level breakdown
+  // not separately tracked in market data; players are attributed at layer level)
+  const playerList = layer.players.map(p=>{
+    const live = p.ticker && LIVE_SNAPSHOT?.players?.[p.ticker];
+    const price = live?.price;
+    const mktCap = live?.marketCapM;
+    return `<tr>
+      <td style="font-family:var(--font-mono); font-size:12px;">${p.name}</td>
+      <td style="font-family:var(--font-mono); font-size:12px;">${p.ticker||'Private'}</td>
+      <td style="font-family:var(--font-mono); font-size:12px;">${mktCap!=null?'$'+mktCap.toLocaleString()+'M':'—'}</td>
+      <td style="font-family:var(--font-mono); font-size:12px;">${price!=null?'$'+price.toFixed(2):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const tamSection = layerB ? `
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:20px;">
+      <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--cyan); text-transform:uppercase;">Parent Layer Market Context</span>
+      <p style="margin-top:8px; color:var(--text); font-size:13px;">${layerB.tam.value} <span style="color:var(--muted);">(${layerB.tam.label})</span></p>
+      <p style="font-size:11px; color:var(--muted); margin-top:6px;">Source: ${layerB.source}</p>
+    </div>` : '';
+
+  const content = document.getElementById('drillPanelContent');
+  content.innerHTML = `
+    <button class="close-x" id="closeDrill" aria-label="Close">&times;</button>
+    <div style="font-family:var(--font-mono); font-size:11px; color:var(--violet); text-transform:uppercase; margin-bottom:8px;">Layer ${layer.order} &rsaquo; Sub-component</div>
+    <h3>${sub.name}</h3>
+    <p>${sub.description}</p>
+
+    <div class="layer-desc-box" style="margin-top:16px; margin-bottom:20px;">
+      <b>Role in the stack:</b> This sub-component sits within the <b>${layer.name}</b> layer. ${layer.overview}
+    </div>
+
+    ${tamSection}
+
+    <span style="font-family:var(--font-mono); font-size:11px; color:var(--cyan); text-transform:uppercase; display:block; margin-bottom:10px;">Key Players in Parent Layer</span>
+    <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Market data is tracked at the parent-layer level. All players below operate across one or more sub-components of ${layer.name}.</p>
+    <div style="overflow-x:auto; border:1px solid var(--border); border-radius:10px; margin-bottom:16px;">
+      <table style="width:100%; border-collapse:collapse; font-size:12px; min-width:380px;">
+        <thead><tr>
+          <th style="text-align:left; padding:10px 12px; background:var(--surface-2); color:var(--cyan); font-size:10.5px; font-family:var(--font-mono); text-transform:uppercase;">Player</th>
+          <th style="text-align:left; padding:10px 12px; background:var(--surface-2); color:var(--cyan); font-size:10.5px; font-family:var(--font-mono); text-transform:uppercase;">Ticker</th>
+          <th style="text-align:left; padding:10px 12px; background:var(--surface-2); color:var(--cyan); font-size:10.5px; font-family:var(--font-mono); text-transform:uppercase;">Mkt Cap (live)</th>
+          <th style="text-align:left; padding:10px 12px; background:var(--surface-2); color:var(--cyan); font-size:10.5px; font-family:var(--font-mono); text-transform:uppercase;">Price (live)</th>
+        </tr></thead>
+        <tbody>${playerList}</tbody>
+      </table>
+    </div>
+    <p style="font-size:11px; color:var(--muted);">Full financial detail (revenue, P/E, RAG status, etc.) is available in the parent layer view. Click the layer card in the stack above to see it.</p>
+  `;
+  document.getElementById('drillBackdrop').classList.add('open');
+  document.getElementById('closeDrill').addEventListener('click', ()=> document.getElementById('drillBackdrop').classList.remove('open'));
+}
+document.getElementById('drillBackdrop').addEventListener('click', e=>{
+  if(e.target.id==='drillBackdrop') e.currentTarget.classList.remove('open');
+});
+
+/* ============ REFRESH ============ */
+async function handleRefresh(){
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('refreshing');
+  btn.disabled = true;
+  try{
+    // Step 1: trigger an actual live fetch (Finnhub + EDGAR + approved feeds + recompute).
+    const refreshRes = await fetch('/.netlify/functions/refresh', { method: 'POST' });
+    if(!refreshRes.ok) throw new Error('refresh function not reachable in this context');
+
+    // Step 2: read back the snapshot that refresh.js just wrote.
+    const dataRes = await fetch('/.netlify/functions/get-data');
+    if(!dataRes.ok) throw new Error('get-data function not reachable in this context');
+    const fresh = await dataRes.json();
+
+    LIVE_SNAPSHOT = fresh.tierA;
+    LIVE_TIER_B_LAYERS = fresh.tierBLayers || LIVE_TIER_B_LAYERS;
+    TIER_A_STATE.lastRefreshed = fmtTimestamp();
+    TIER_B_STATE.lastResearched = fresh.tierBLastResearched || TIER_B_STATE.lastResearched;
+  }catch(err){
+    // Expected in this in-chat preview, since outbound API calls are not available here.
+    // On a real deployment, an error here means the function genuinely failed —
+    // check the Netlify function logs rather than assuming this is normal.
+    console.warn('Refresh did not complete:', err.message);
+  }
+  rebuildDerivedCache(); // rebuild with latest live data
+  renderTimestamp();
+  renderTicker();
+  if(CURRENT_OPEN_LAYER) openLayer(CURRENT_OPEN_LAYER); // re-render table with any new data
+  btn.classList.remove('refreshing');
+  btn.disabled = false;
+}
+
+/* ============ DIALOGS ============ */
+function bindDialog(openId, backdropId){
+  document.getElementById(openId).addEventListener('click', ()=> document.getElementById(backdropId).classList.add('open'));
+}
+document.querySelectorAll('[data-close]').forEach(btn=>{
+  btn.addEventListener('click', ()=> document.getElementById(btn.dataset.close).classList.remove('open'));
+});
+document.querySelectorAll('.dialog-backdrop').forEach(bd=>{
+  bd.addEventListener('click', e=>{ if(e.target===bd) bd.classList.remove('open'); });
+});
+
+/* ============ INIT ============ */
+(async function init(){
+  await loadData();
+  rebuildDerivedCache(); // initial build from embedded baselines (no live data yet)
+  renderStack();
+  renderTicker();
+
+  // Attempt to read whatever snapshot already exists from a prior refresh/scheduled
+  // run, so a fresh visitor sees current data without having to click Refresh.
+  // Silently does nothing in this in-chat preview context, by design.
+  try{
+    const dataRes = await fetch('/.netlify/functions/get-data');
+    if(dataRes.ok){
+      const fresh = await dataRes.json();
+      LIVE_SNAPSHOT = fresh.tierA;
+      LIVE_TIER_B_LAYERS = fresh.tierBLayers || null;
+      if(fresh.tierA?.tierALastRefreshed){
+        const d = new Date(fresh.tierA.tierALastRefreshed);
+        TIER_A_STATE.lastRefreshed = {
+          ist: d.toLocaleString('en-IN', {timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', hour12:false}),
+          et: d.toLocaleString('en-US', {timeZone:'America/New_York', hour:'2-digit', minute:'2-digit', hour12:false}),
+          dateLabel: d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
+        };
+      }
+      TIER_B_STATE.lastResearched = fresh.tierBLastResearched || null;
+    }
+  }catch(err){ /* expected in this preview context */ }
+  rebuildDerivedCache(); // rebuild now that live snapshot may have arrived
+  renderTimestamp();
+  renderTicker();
+
+  document.getElementById('enterBtn').addEventListener('click', ()=>{
+    document.getElementById('landing').style.display='none';
+    document.getElementById('theatre').classList.add('active');
+    // Measure topbar height so sticky stack positions correctly
+    const setTopbarH = () => {
+      const h = document.querySelector('.topbar')?.offsetHeight || 100;
+      document.documentElement.style.setProperty('--topbar-h', h + 'px');
+    };
+    setTopbarH();
+    window.addEventListener('resize', setTopbarH);
+  });
+  bindDialog('openSourceDialog','sourceDialogBackdrop');
+  bindDialog('openDisclaimerDialog','disclaimerDialogBackdrop');
+  document.getElementById('disclaimerBarBtn').addEventListener('click', ()=> document.getElementById('disclaimerDialogBackdrop').classList.add('open'));
+  document.getElementById('refreshBtn').addEventListener('click', handleRefresh);
+})();
+</script>
+</body>
+</html>
